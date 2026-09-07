@@ -147,7 +147,7 @@ const storms: StormSeed[] = [
   },
 ];
 
-const allStorms: typeof storms = [...storms, ...additionalStorms];
+export const allStorms: typeof storms = [...storms, ...additionalStorms];
 
 export function getMockStorms(): Storm[] {
   return allStorms

@@ -159,39 +159,102 @@ export const TopNav: React.FC<TopNavProps> = ({
               }`}
             >
               <div
-                className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider border-b ${
+                className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider border-b flex items-center justify-between ${
                   isLight ? 'text-slate-500 border-slate-100' : 'text-zinc-400 border-zinc-800'
                 }`}
               >
-                Select Active System
+                <span>Select Cyclone System</span>
+                <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-zinc-800 text-cyan-500">
+                  {storms.length} Total
+                </span>
               </div>
-              <div className="py-1 max-h-64 overflow-y-auto">
-                {storms.map((s) => (
-                  <button
-                    key={s.id}
-                    onClick={() => {
-                      onSelectStorm(s);
-                      setIsDropdownOpen(false);
-                    }}
-                    className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between transition-colors ${
-                      s.id === selectedStorm.id
-                        ? isLight
-                          ? 'bg-cyan-50 text-cyan-700 font-semibold border-l-2 border-cyan-500'
-                          : 'bg-[#27272e] text-cyan-400 font-semibold border-l-2 border-cyan-400'
-                        : isLight
-                        ? 'text-slate-700 hover:bg-slate-50'
-                        : 'text-zinc-200 hover:bg-[#27272e]'
-                    }`}
-                  >
-                    <div className="truncate mr-2">
-                      <div className={`truncate font-medium ${isLight ? 'text-slate-900' : 'text-white'}`}>{s.name}</div>
-                      <div className={`text-[10px] truncate ${isLight ? 'text-slate-500' : 'text-zinc-400'}`}>{s.basin}</div>
+              <div className="py-1 max-h-72 overflow-y-auto divide-y divide-slate-100 dark:divide-zinc-800/60">
+                {/* Active / Live Storms */}
+                {storms.filter((s) => s.status === 'LIVE').length > 0 && (
+                  <div>
+                    <div className={`px-3 py-1 text-[9px] font-bold uppercase tracking-wider ${isLight ? 'bg-emerald-50/80 text-emerald-700' : 'bg-emerald-950/40 text-emerald-400'}`}>
+                      🔴 Active & Live Systems
                     </div>
-                    <span className={`text-[10px] font-mono shrink-0 ${isLight ? 'text-slate-500' : 'text-zinc-400'}`}>
-                      {s.currentPoint.windSpeedKnots} kts
-                    </span>
-                  </button>
-                ))}
+                    {storms
+                      .filter((s) => s.status === 'LIVE')
+                      .map((s) => (
+                        <button
+                          key={s.id}
+                          onClick={() => {
+                            onSelectStorm(s);
+                            setIsDropdownOpen(false);
+                          }}
+                          className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between transition-colors ${
+                            s.id === selectedStorm.id
+                              ? isLight
+                                ? 'bg-cyan-50 text-cyan-700 font-semibold border-l-2 border-cyan-500'
+                                : 'bg-[#27272e] text-cyan-400 font-semibold border-l-2 border-cyan-400'
+                              : isLight
+                              ? 'text-slate-700 hover:bg-slate-50'
+                              : 'text-zinc-200 hover:bg-[#27272e]'
+                          }`}
+                        >
+                          <div className="truncate mr-2">
+                            <div className={`truncate font-medium flex items-center gap-1.5 ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                              {s.name}
+                            </div>
+                            <div className={`text-[10px] truncate ${isLight ? 'text-slate-500' : 'text-zinc-400'}`}>
+                              {s.basin}
+                            </div>
+                          </div>
+                          <div className="text-right shrink-0">
+                            <div className={`text-[10px] font-mono font-semibold ${isLight ? 'text-slate-800' : 'text-zinc-100'}`}>
+                              {s.currentPoint.windSpeedKnots} kts
+                            </div>
+                            <div className="text-[9px] text-cyan-500 font-medium">
+                              {getCategoryShort(s.currentPoint.category)}
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                  </div>
+                )}
+
+                {/* Historical Cyclone Archive */}
+                <div>
+                  <div className={`px-3 py-1 text-[9px] font-bold uppercase tracking-wider ${isLight ? 'bg-slate-100 text-slate-600' : 'bg-[#18181d] text-zinc-400'}`}>
+                    🌊 Historical Archive (Amphan, Fani, Mocha, etc.)
+                  </div>
+                  {storms
+                    .filter((s) => s.status !== 'LIVE')
+                    .map((s) => (
+                      <button
+                        key={s.id}
+                        onClick={() => {
+                          onSelectStorm(s);
+                          setIsDropdownOpen(false);
+                        }}
+                        className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between transition-colors ${
+                          s.id === selectedStorm.id
+                            ? isLight
+                              ? 'bg-cyan-50 text-cyan-700 font-semibold border-l-2 border-cyan-500'
+                              : 'bg-[#27272e] text-cyan-400 font-semibold border-l-2 border-cyan-400'
+                            : isLight
+                            ? 'text-slate-700 hover:bg-slate-50'
+                            : 'text-zinc-200 hover:bg-[#27272e]'
+                        }`}
+                      >
+                        <div className="truncate mr-2">
+                          <div className={`truncate font-medium ${isLight ? 'text-slate-900' : 'text-white'}`}>{s.name}</div>
+                          <div className={`text-[10px] truncate ${isLight ? 'text-slate-500' : 'text-zinc-400'}`}>{s.basin}</div>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <div className={`text-[10px] font-mono font-semibold ${isLight ? 'text-slate-800' : 'text-zinc-100'}`}>
+                            {s.currentPoint.windSpeedKnots} kts
+                          </div>
+                          <div className="text-[9px] text-slate-400 font-medium">
+                            {getCategoryShort(s.currentPoint.category)}
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                </div>
               </div>
             </div>
           )}

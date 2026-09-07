@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, Suspense } from 'react';
 import dynamic from 'next/dynamic';
-import { MOCK_STORMS } from '@/lib/data/mockStorms';
+import { useSearchParams } from 'next/navigation';
 import { Storm, ObservationPoint } from '@/lib/types/cyclone';
+import { getAllWindyStorms, fetchLiveWindyStorms } from '@/lib/data/stormSenseAdapter';
 import { TopNav } from '@/components/dashboard/TopNav';
 import { WindyLayerBar, WindyActiveLayers, MapNavigationControls } from '@/components/windy/WindyLayerBar';
 import { WindyTimeline } from '@/components/windy/WindyTimeline';
@@ -28,8 +29,49 @@ const DynamicCycloneMap = dynamic(
 );
 
 export default function StormSenseWindyDashboard() {
-  const [storms] = useState<Storm[]>(MOCK_STORMS);
-  const [selectedStorm, setSelectedStorm] = useState<Storm>(MOCK_STORMS[0]);
+  return (
+    <Suspense fallback={null}>
+      <WindyDashboardContent />
+    </Suspense>
+  );
+}
+
+function WindyDashboardContent() {
+  const searchParams = useSearchParams();
+  const [storms, setStorms] = useState<Storm[]>(() => getAllWindyStorms());
+  const [selectedStorm, setSelectedStorm] = useState<Storm>(() => {
+    const all = getAllWindyStorms();
+    return all[0];
+  });
+
+  // Fetch live NOAA & IMD storms on mount to append to list
+  useEffect(() => {
+    let mounted = true;
+    fetchLiveWindyStorms().then((updatedList) => {
+      if (mounted && updatedList.length > 0) {
+        setStorms(updatedList);
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  // Listen for ?storm= in URL params
+  useEffect(() => {
+    const stormParam = searchParams.get('storm');
+    if (!stormParam) return;
+    const target = storms.find(
+      (s) =>
+        s.id.toLowerCase() === stormParam.toLowerCase() ||
+        s.name.toLowerCase().includes(stormParam.toLowerCase())
+    );
+    if (target && target.id !== selectedStorm.id) {
+      setSelectedStorm(target);
+      const idx = target.timeline.findIndex((p) => p.timeOffsetHours === 0);
+      setActivePointIndex(idx !== -1 ? idx : 0);
+    }
+  }, [searchParams, storms, selectedStorm.id]);
 
   // Initial timeline index at T0 (NOW)
   const initialIndex = selectedStorm.timeline.findIndex((p) => p.timeOffsetHours === 0);

@@ -532,9 +532,19 @@ function HomeContent() {
                           </div>
                           <div className="mt-1.5 flex items-center justify-between text-xs text-slate-600">
                             <span>💨 {Math.round(s.wind_kt ?? s.maxWind ?? 0)} kt ({windToKmh(s.wind_kt ?? s.maxWind ?? 0)} km/h)</span>
-                            <span className="font-semibold text-indigo-600 group-hover:translate-x-0.5 transition-transform">
-                              Focus 📍
-                            </span>
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-semibold text-indigo-600 group-hover:translate-x-0.5 transition-transform">
+                                Focus 📍
+                              </span>
+                              <Link
+                                href={`/?storm=${s.id}`}
+                                onClick={(e) => e.stopPropagation()}
+                                className="rounded px-1.5 py-0.5 text-[10px] font-bold bg-cyan-100 hover:bg-cyan-200 text-cyan-800 transition"
+                                title="Open in Interactive Windy GIS Map"
+                              >
+                                🌪️ GIS
+                              </Link>
+                            </div>
                           </div>
                         </button>
                       );
@@ -565,7 +575,17 @@ function HomeContent() {
                         </div>
                         <div className="mt-1 flex items-center justify-between text-xs text-slate-500">
                           <span>{scat.replace(/_/g, " ")} · {Math.round(s.wind_kt ?? s.maxWind ?? 0)} kt</span>
-                          <span className="text-indigo-600">View Track 📍</span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-indigo-600">Track 📍</span>
+                            <Link
+                              href={`/?storm=${s.id}`}
+                              onClick={(e) => e.stopPropagation()}
+                              className="rounded px-1.5 py-0.5 text-[10px] font-bold bg-cyan-100 hover:bg-cyan-200 text-cyan-800 transition"
+                              title="Open in Interactive Windy GIS Map"
+                            >
+                              🌪️ GIS
+                            </Link>
+                          </div>
                         </div>
                       </button>
                     );
