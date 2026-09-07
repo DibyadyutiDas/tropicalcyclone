@@ -30,10 +30,10 @@ export const WindySpotPicker: React.FC<WindySpotPickerProps> = ({ data, onClose 
   if (!data) return null;
 
   return (
-    <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 select-none animate-in fade-in zoom-in-95 duration-200">
-      <div className="rounded-2xl bg-zinc-950/90 backdrop-blur-xl border border-cyan-500/40 p-3 shadow-[0_0_30px_rgba(6,182,212,0.25)] flex items-center gap-3 text-zinc-100 min-w-[280px]">
-        {/* Animated Directional Wind Arrow */}
-        <div className="relative w-11 h-11 rounded-full bg-cyan-950/80 border border-cyan-500/60 flex items-center justify-center shrink-0">
+    <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 select-none animate-in fade-in zoom-in-95 duration-150">
+      <div className="rounded-2xl bg-[#16161a]/95 backdrop-blur-xl border border-zinc-700/80 p-3.5 shadow-2xl flex items-center gap-3 text-zinc-100 min-w-[280px]">
+        {/* Directional Wind Arrow */}
+        <div className="relative w-10 h-10 rounded-full bg-[#202026] border border-zinc-700 flex items-center justify-center shrink-0 shadow-inner">
           <div
             className="transition-transform duration-300"
             style={{ transform: `rotate(${data.windHeadingDeg}deg)` }}

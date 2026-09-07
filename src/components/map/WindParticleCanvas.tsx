@@ -27,13 +27,12 @@ interface Particle {
   speedMultiplier: number;
 }
 
-// Map speed to clean white/cyan particle glow with Windy vibrant ramp
+// Map speed to clean white/light grey streamline particles (no neon glow)
 function getParticleColor(speedNorm: number): string {
-  if (speedNorm < 0.2) return 'rgba(180, 230, 255, 0.4)';
-  if (speedNorm < 0.45) return 'rgba(56, 189, 248, 0.7)';
-  if (speedNorm < 0.7) return 'rgba(52, 211, 153, 0.85)';
-  if (speedNorm < 0.88) return 'rgba(250, 204, 21, 0.95)';
-  return 'rgba(244, 63, 94, 1.0)';
+  if (speedNorm < 0.25) return 'rgba(255, 255, 255, 0.4)';
+  if (speedNorm < 0.6) return 'rgba(255, 255, 255, 0.7)';
+  if (speedNorm < 0.85) return 'rgba(255, 255, 255, 0.9)';
+  return 'rgba(255, 255, 255, 1.0)';
 }
 
 export const WindParticleCanvas: React.FC<WindParticleCanvasProps> = ({
@@ -46,7 +45,7 @@ export const WindParticleCanvas: React.FC<WindParticleCanvasProps> = ({
   thermalIR = false,
   rainRadar = false,
   waves = false,
-  pressure = false,
+  pressure = true,
   gradCam = false,
 }) => {
   const fgCanvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -54,7 +53,7 @@ export const WindParticleCanvas: React.FC<WindParticleCanvasProps> = ({
   const animFrameId = useRef<number | null>(null);
   const particlesRef = useRef<Particle[]>([]);
 
-  // 1. Render Meteorological Satellite / Radar / Waves / Isobars Overlays
+  // 1. Render Meteorological Satellite / Radar / Isobars (No Glow, Clean Cartography)
   useEffect(() => {
     if (!map) return;
     const canvas = overlayCanvasRef.current;
@@ -72,14 +71,11 @@ export const WindParticleCanvas: React.FC<WindParticleCanvasProps> = ({
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const hasOverlay = waterVapor || thermalIR || rainRadar || waves || pressure || gradCam;
-      if (!hasOverlay) return;
-
       const centerScreen = map.project([centerLng, centerLat]);
       const zoom = map.getZoom();
-      const radiusPx = Math.max(120, Math.pow(2, zoom - 2) * 48);
+      const radiusPx = Math.max(120, Math.pow(2, zoom - 2) * 50);
 
-      // A. WATER VAPOR (Atmospheric moisture stream)
+      // A. WATER VAPOR (Clean atmospheric moisture gradient)
       if (waterVapor) {
         const wvGrad = ctx.createRadialGradient(
           centerScreen.x,
@@ -87,34 +83,20 @@ export const WindParticleCanvas: React.FC<WindParticleCanvasProps> = ({
           0,
           centerScreen.x,
           centerScreen.y,
-          radiusPx * 2.3
+          radiusPx * 2.2
         );
-        wvGrad.addColorStop(0, 'rgba(56, 189, 248, 0.45)');
-        wvGrad.addColorStop(0.35, 'rgba(14, 165, 233, 0.3)');
-        wvGrad.addColorStop(0.7, 'rgba(3, 105, 161, 0.15)');
+        wvGrad.addColorStop(0, 'rgba(56, 189, 248, 0.35)');
+        wvGrad.addColorStop(0.4, 'rgba(14, 165, 233, 0.22)');
+        wvGrad.addColorStop(0.8, 'rgba(3, 105, 161, 0.1)');
         wvGrad.addColorStop(1, 'rgba(2, 132, 199, 0)');
 
         ctx.fillStyle = wvGrad;
         ctx.beginPath();
-        ctx.arc(centerScreen.x, centerScreen.y, radiusPx * 2.3, 0, Math.PI * 2);
+        ctx.arc(centerScreen.x, centerScreen.y, radiusPx * 2.2, 0, Math.PI * 2);
         ctx.fill();
-
-        // Spiral moisture bands
-        ctx.save();
-        ctx.translate(centerScreen.x, centerScreen.y);
-        ctx.rotate(-0.4);
-        ctx.strokeStyle = 'rgba(186, 230, 253, 0.22)';
-        ctx.lineWidth = radiusPx * 0.28;
-        ctx.beginPath();
-        ctx.arc(0, 0, radiusPx * 1.1, 0.5, Math.PI * 1.4);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.arc(0, 0, radiusPx * 1.6, Math.PI * 0.8, Math.PI * 1.9);
-        ctx.stroke();
-        ctx.restore();
       }
 
-      // B. THERMAL IR (Cold convective cloud top temperature palette)
+      // B. THERMAL IR (Cold cloud tops)
       if (thermalIR) {
         const irGrad = ctx.createRadialGradient(
           centerScreen.x,
@@ -122,110 +104,106 @@ export const WindParticleCanvas: React.FC<WindParticleCanvasProps> = ({
           0,
           centerScreen.x,
           centerScreen.y,
-          radiusPx * 1.85
+          radiusPx * 1.8
         );
-        irGrad.addColorStop(0, 'rgba(244, 63, 94, 0.7)'); // Core deep convective red (-80°C)
-        irGrad.addColorStop(0.2, 'rgba(236, 72, 153, 0.55)'); // Pink
-        irGrad.addColorStop(0.45, 'rgba(168, 85, 247, 0.4)'); // Purple
-        irGrad.addColorStop(0.75, 'rgba(59, 130, 246, 0.22)'); // Cold blue
+        irGrad.addColorStop(0, 'rgba(225, 29, 72, 0.6)');
+        irGrad.addColorStop(0.25, 'rgba(219, 39, 119, 0.45)');
+        irGrad.addColorStop(0.5, 'rgba(147, 51, 234, 0.3)');
+        irGrad.addColorStop(0.8, 'rgba(59, 130, 246, 0.15)');
         irGrad.addColorStop(1, 'rgba(59, 130, 246, 0)');
 
         ctx.fillStyle = irGrad;
         ctx.beginPath();
-        ctx.arc(centerScreen.x, centerScreen.y, radiusPx * 1.85, 0, Math.PI * 2);
+        ctx.arc(centerScreen.x, centerScreen.y, radiusPx * 1.8, 0, Math.PI * 2);
         ctx.fill();
       }
 
-      // C. RAIN & CONVECTIVE RADAR (Doppler reflectivity echoes in dBZ)
+      // C. RAIN & RADAR CONVECTION (Doppler reflectivity echoes like reference image)
       if (rainRadar) {
         const radarGrad = ctx.createRadialGradient(
           centerScreen.x,
           centerScreen.y,
-          radiusPx * 0.12,
+          radiusPx * 0.1,
           centerScreen.x,
           centerScreen.y,
-          radiusPx * 1.6
+          radiusPx * 1.5
         );
-        radarGrad.addColorStop(0, 'rgba(220, 38, 38, 0.75)'); // Intense red precipitation core > 55 dBZ
-        radarGrad.addColorStop(0.25, 'rgba(249, 115, 22, 0.65)'); // Orange
-        radarGrad.addColorStop(0.5, 'rgba(234, 179, 8, 0.5)'); // Yellow
-        radarGrad.addColorStop(0.75, 'rgba(34, 197, 94, 0.35)'); // Green rain band
+        radarGrad.addColorStop(0, 'rgba(220, 38, 38, 0.65)');
+        radarGrad.addColorStop(0.2, 'rgba(249, 115, 22, 0.55)');
+        radarGrad.addColorStop(0.45, 'rgba(234, 179, 8, 0.4)');
+        radarGrad.addColorStop(0.75, 'rgba(34, 197, 94, 0.25)');
         radarGrad.addColorStop(1, 'rgba(34, 197, 94, 0)');
 
         ctx.fillStyle = radarGrad;
         ctx.beginPath();
-        ctx.arc(centerScreen.x, centerScreen.y, radiusPx * 1.6, 0, Math.PI * 2);
+        ctx.arc(centerScreen.x, centerScreen.y, radiusPx * 1.5, 0, Math.PI * 2);
         ctx.fill();
-
-        // Convective rain spiral feeder bands
-        ctx.save();
-        ctx.translate(centerScreen.x, centerScreen.y);
-        ctx.strokeStyle = 'rgba(239, 68, 68, 0.45)';
-        ctx.lineWidth = radiusPx * 0.18;
-        ctx.beginPath();
-        ctx.arc(0, 0, radiusPx * 0.7, 0.2, Math.PI * 1.2);
-        ctx.stroke();
-        ctx.strokeStyle = 'rgba(234, 179, 8, 0.35)';
-        ctx.lineWidth = radiusPx * 0.22;
-        ctx.beginPath();
-        ctx.arc(0, 0, radiusPx * 1.2, Math.PI * 0.7, Math.PI * 1.8);
-        ctx.stroke();
-        ctx.restore();
       }
 
-      // D. WAVES & SWELL (Oceanic swell heights)
+      // D. WAVES & SWELL (Clean oceanic contours)
       if (waves) {
-        const waveRings = [0.4, 0.8, 1.2, 1.6, 2.0];
+        const waveRings = [0.5, 0.9, 1.3, 1.7, 2.1];
         ctx.save();
-        waveRings.forEach((scale, i) => {
-          ctx.strokeStyle = `rgba(59, 130, 246, ${0.4 - i * 0.06})`;
-          ctx.lineWidth = 2.5;
-          ctx.setLineDash([8, 6]);
+        waveRings.forEach((scale) => {
+          ctx.strokeStyle = 'rgba(96, 165, 250, 0.4)';
+          ctx.lineWidth = 1.5;
           ctx.beginPath();
           ctx.arc(centerScreen.x, centerScreen.y, radiusPx * scale, 0, Math.PI * 2);
           ctx.stroke();
-
-          // Swell height annotations
-          const swellH = (6.5 - i * 1.0).toFixed(1);
-          ctx.fillStyle = 'rgba(147, 197, 253, 0.85)';
-          ctx.font = 'bold 10px monospace';
-          ctx.fillText(`${swellH}m`, centerScreen.x + radiusPx * scale - 12, centerScreen.y - 6);
         });
         ctx.restore();
       }
 
-      // E. PRESSURE & ISOBARS (MSLP contours)
+      // E. PRESSURE & ISOBARS (Exact Windy Style from Image: Cyan lines + Oval Badges: 1004, 1006, 1008, 1012)
       if (pressure) {
         const isobars = [
-          { r: 0.3, p: '940 hPa' },
-          { r: 0.6, p: '960 hPa' },
-          { r: 0.9, p: '980 hPa' },
-          { r: 1.3, p: '996 hPa' },
-          { r: 1.7, p: '1004 hPa' },
-          { r: 2.1, p: '1008 hPa' },
+          { r: 0.5, label: '992' },
+          { r: 0.85, label: '1004' },
+          { r: 1.25, label: '1006' },
+          { r: 1.65, label: '1008' },
+          { r: 2.1, label: '1012' },
         ];
+
         ctx.save();
-        isobars.forEach((iso) => {
-          ctx.strokeStyle = 'rgba(251, 191, 36, 0.45)';
+        isobars.forEach((iso, i) => {
+          // Isobar contour line (solid cyan/blue line)
+          ctx.strokeStyle = 'rgba(56, 189, 248, 0.55)';
           ctx.lineWidth = 1.5;
-          ctx.setLineDash([4, 4]);
           ctx.beginPath();
           ctx.arc(centerScreen.x, centerScreen.y, radiusPx * iso.r, 0, Math.PI * 2);
           ctx.stroke();
 
-          ctx.fillStyle = 'rgba(252, 211, 77, 0.9)';
-          ctx.font = 'bold 10px monospace';
-          ctx.fillText(iso.p, centerScreen.x + radiusPx * iso.r - 20, centerScreen.y + 12);
+          // Oval badge on top of contour (Windy style rounded pill badge)
+          const angle = -Math.PI / 3 - i * 0.25;
+          const badgeX = centerScreen.x + Math.cos(angle) * (radiusPx * iso.r);
+          const badgeY = centerScreen.y + Math.sin(angle) * (radiusPx * iso.r);
+
+          const pillW = 34;
+          const pillH = 16;
+          const pillR = 8;
+
+          // Pill Background
+          ctx.fillStyle = '#0e7490';
+          ctx.beginPath();
+          ctx.roundRect(badgeX - pillW / 2, badgeY - pillH / 2, pillW, pillH, pillR);
+          ctx.fill();
+
+          ctx.strokeStyle = '#38bdf8';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+
+          // Pill Text (White bold font)
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 9px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(iso.label, badgeX, badgeY);
         });
 
-        // Center Low marker
-        ctx.fillStyle = '#ef4444';
-        ctx.font = 'bold 16px sans-serif';
-        ctx.fillText('L', centerScreen.x - 6, centerScreen.y + 6);
         ctx.restore();
       }
 
-      // F. GRAD-CAM ATTENTION (Model focal attention map)
+      // F. GRAD-CAM ATTENTION
       if (gradCam) {
         const camGrad = ctx.createRadialGradient(
           centerScreen.x,
@@ -233,40 +211,18 @@ export const WindParticleCanvas: React.FC<WindParticleCanvasProps> = ({
           0,
           centerScreen.x,
           centerScreen.y,
-          radiusPx * 1.4
+          radiusPx * 1.3
         );
-        camGrad.addColorStop(0, 'rgba(234, 179, 8, 0.7)');
-        camGrad.addColorStop(0.35, 'rgba(239, 68, 68, 0.5)');
-        camGrad.addColorStop(0.7, 'rgba(147, 51, 234, 0.25)');
+        camGrad.addColorStop(0, 'rgba(234, 179, 8, 0.6)');
+        camGrad.addColorStop(0.4, 'rgba(239, 68, 68, 0.4)');
+        camGrad.addColorStop(0.8, 'rgba(147, 51, 234, 0.2)');
         camGrad.addColorStop(1, 'rgba(147, 51, 234, 0)');
 
         ctx.fillStyle = camGrad;
         ctx.beginPath();
-        ctx.arc(centerScreen.x, centerScreen.y, radiusPx * 1.4, 0, Math.PI * 2);
+        ctx.arc(centerScreen.x, centerScreen.y, radiusPx * 1.3, 0, Math.PI * 2);
         ctx.fill();
       }
-
-      // G. Realistic Stadium Eyewall Cloud Canopy
-      const eyeHoleRadius = Math.max(10, radiusPx * 0.14);
-      const eyewallRadius = Math.max(34, radiusPx * 0.5);
-
-      const eyeWallGrad = ctx.createRadialGradient(
-        centerScreen.x,
-        centerScreen.y,
-        eyeHoleRadius,
-        centerScreen.x,
-        centerScreen.y,
-        eyewallRadius
-      );
-      eyeWallGrad.addColorStop(0, 'rgba(255, 255, 255, 0)');
-      eyeWallGrad.addColorStop(0.2, 'rgba(255, 255, 255, 0.45)');
-      eyeWallGrad.addColorStop(0.65, 'rgba(200, 235, 255, 0.2)');
-      eyeWallGrad.addColorStop(1, 'rgba(200, 235, 255, 0)');
-
-      ctx.fillStyle = eyeWallGrad;
-      ctx.beginPath();
-      ctx.arc(centerScreen.x, centerScreen.y, eyewallRadius, 0, Math.PI * 2);
-      ctx.fill();
     };
 
     drawOverlay();
@@ -281,7 +237,7 @@ export const WindParticleCanvas: React.FC<WindParticleCanvasProps> = ({
     };
   }, [map, centerLat, centerLng, waterVapor, thermalIR, rainRadar, waves, pressure, gradCam]);
 
-  // 2. Wind Particle Simulation Loop
+  // 2. Wind Particle Simulation Loop (Natural Streamlines, No Neon Glow)
   useEffect(() => {
     if (!visible || !map) return;
 
@@ -300,7 +256,7 @@ export const WindParticleCanvas: React.FC<WindParticleCanvasProps> = ({
     resize();
     map.on('resize', resize);
 
-    const NUM_PARTICLES = 1050;
+    const NUM_PARTICLES = 1000;
 
     const spawnParticle = (): Particle => {
       const bounds = map.getBounds();
@@ -320,8 +276,8 @@ export const WindParticleCanvas: React.FC<WindParticleCanvasProps> = ({
         prevX: pos.x,
         prevY: pos.y,
         age: 0,
-        maxAge: 70 + Math.floor(Math.random() * 90),
-        speedMultiplier: 0.75 + Math.random() * 0.45,
+        maxAge: 70 + Math.floor(Math.random() * 80),
+        speedMultiplier: 0.75 + Math.random() * 0.4,
       };
     };
 
@@ -330,9 +286,9 @@ export const WindParticleCanvas: React.FC<WindParticleCanvasProps> = ({
     const render = () => {
       if (!fgCanvas || !fgCtx || !map) return;
 
-      // Clean trail fading for silky streamlines
+      // Clean fading
       fgCtx.globalCompositeOperation = 'destination-in';
-      fgCtx.fillStyle = 'rgba(0, 0, 0, 0.94)';
+      fgCtx.fillStyle = 'rgba(0, 0, 0, 0.93)';
       fgCtx.fillRect(0, 0, fgCanvas.width, fgCanvas.height);
       fgCtx.globalCompositeOperation = 'source-over';
 
@@ -364,12 +320,12 @@ export const WindParticleCanvas: React.FC<WindParticleCanvasProps> = ({
         let u = 0;
         let v = 0;
 
-        // Gentle ambient background flow
+        // Ambient flow
         const ambientSpeed = 0.0035;
         u += Math.sin(p.lat * 0.12 + time) * ambientSpeed - (isNorthernHemisphere ? 0.003 : -0.003);
         v += Math.cos(p.lng * 0.12 + time) * ambientSpeed;
 
-        // Cyclone Rankine Vortex & Inflow Spiral Model
+        // Cyclone Rankine Vortex Model
         if (dist < 28) {
           const eyeRadiusDeg = 0.42;
           let vTangential = 0;
@@ -390,7 +346,7 @@ export const WindParticleCanvas: React.FC<WindParticleCanvasProps> = ({
           const falloff = Math.max(0, 1 - Math.pow(dist / 28, 1.4));
           vTangential *= falloff;
 
-          const cycloneSpeed = (maxWindKnots / 100) * 0.015 * vTangential;
+          const cycloneSpeed = (maxWindKnots / 100) * 0.014 * vTangential;
 
           const angle = Math.atan2(dLat, dLng);
           const rotationSign = isNorthernHemisphere ? 1 : -1;
@@ -405,7 +361,7 @@ export const WindParticleCanvas: React.FC<WindParticleCanvasProps> = ({
         u *= p.speedMultiplier;
         v *= p.speedMultiplier;
 
-        const maxExpectedSpeed = (maxWindKnots / 100) * 0.015;
+        const maxExpectedSpeed = (maxWindKnots / 100) * 0.014;
         const speedNorm = Math.sqrt(u * u + v * v) / maxExpectedSpeed;
 
         p.lng += u;
@@ -418,7 +374,7 @@ export const WindParticleCanvas: React.FC<WindParticleCanvasProps> = ({
         fgCtx.lineTo(screenPos.x, screenPos.y);
 
         fgCtx.strokeStyle = getParticleColor(speedNorm);
-        fgCtx.lineWidth = speedNorm > 0.8 ? 1.5 : 1.1;
+        fgCtx.lineWidth = 1.1;
         fgCtx.stroke();
 
         p.prevX = screenPos.x;
@@ -451,17 +407,15 @@ export const WindParticleCanvas: React.FC<WindParticleCanvasProps> = ({
 
   return (
     <>
-      {/* Meteorological Satellite / Radar / Wave / Isobar Overlays */}
       <canvas
         ref={overlayCanvasRef}
         className="absolute inset-0 pointer-events-none z-10 w-full h-full"
       />
 
-      {/* Wind Particles Streamlines */}
       {visible && (
         <canvas
           ref={fgCanvasRef}
-          className="absolute inset-0 pointer-events-none z-20 w-full h-full opacity-90"
+          className="absolute inset-0 pointer-events-none z-20 w-full h-full opacity-85"
         />
       )}
     </>

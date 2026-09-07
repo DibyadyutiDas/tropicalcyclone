@@ -96,7 +96,7 @@ export const TimelineScrubber: React.FC<TimelineScrubberProps> = ({
         </div>
 
         {/* Current Scrubber Timestamp Badge */}
-        <div className="flex items-center gap-2">
+        <div className="hidden sm:flex items-center gap-2">
           <div className="hidden sm:flex items-center gap-1.5 px-2.5 h-8 rounded-lg bg-black border border-zinc-800 text-xs font-mono">
             <Clock className="w-3.5 h-3.5 text-cyan-400" />
             <span className="text-zinc-400 font-sans">Frame:</span>

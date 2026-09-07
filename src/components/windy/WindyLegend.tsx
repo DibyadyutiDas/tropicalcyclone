@@ -53,13 +53,13 @@ export const WindyLegend: React.FC<WindyLegendProps> = ({
   const currentScale = scales[unit] || scales.kts;
 
   return (
-    <div className="select-none flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-950/85 backdrop-blur-md border border-zinc-800/90 shadow-2xl text-zinc-300 text-xs">
+    <div className="select-none flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#16161a]/95 backdrop-blur-xl border border-zinc-700/80 shadow-2xl text-zinc-200 text-xs">
       {/* Layer title & Unit switcher button */}
-      <div className="flex items-center gap-1.5 pr-2 border-r border-zinc-800/80">
+      <div className="flex items-center gap-1.5 pr-2 border-r border-zinc-700/80">
         <span className="font-semibold text-white uppercase text-[10px] tracking-wider">
           Wind Speed
         </span>
-        <div className="flex bg-zinc-900 rounded-lg p-0.5 border border-zinc-800 text-[10px] font-mono">
+        <div className="flex bg-[#222228] rounded-lg p-0.5 border border-zinc-700 text-[10px] font-mono">
           {(['kts', 'kmh', 'mph'] as const).map((u) => (
             <button
               key={u}

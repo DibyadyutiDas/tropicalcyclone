@@ -1,194 +1,302 @@
-'use client';
-
 import React from 'react';
-import {
-  Flame,
-  Globe,
-  Layers,
-  Sparkles,
-  Waves,
-  CloudRain,
-  Activity,
-  Compass,
-} from 'lucide-react';
+import { Globe, Compass, Plus, Minus } from 'lucide-react';
 
 export interface WindyActiveLayers {
   windParticles: boolean;
+  pressure: boolean;
   rainRadar: boolean;
   thermalIR: boolean;
   waterVapor: boolean;
   waves: boolean;
-  pressure: boolean;
   gradCam: boolean;
   trackAndCone: boolean;
   satelliteBasemap: boolean;
+}
+
+export interface MapNavigationControls {
+  zoomIn: () => void;
+  zoomOut: () => void;
+  recenter: () => void;
+  toggleProjection: () => void;
+  toggleEarthSpin: () => void;
+  isGlobe: boolean;
+  isSpinning: boolean;
 }
 
 interface WindyLayerBarProps {
   layers: WindyActiveLayers;
   onToggleLayer: (key: keyof WindyActiveLayers) => void;
   activeUnit?: 'kts' | 'kmh' | 'mph';
+  theme?: 'dark' | 'light';
+  mapControls?: MapNavigationControls | null;
 }
-
-const WindStreamIcon: React.FC<{ className?: string }> = ({ className = 'w-4 h-4' }) => (
-  <svg
-    className={className}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M 12 3 C 16.5 3 20 6.5 20 11 C 20 13.8 18 16 15.5 16.8" />
-    <path d="M 12 21 C 7.5 21 4 17.5 4 13 C 4 10.2 6 8 8.5 7.2" />
-    <circle cx="12" cy="12" r="2.5" fill="currentColor" />
-  </svg>
-);
 
 export const WindyLayerBar: React.FC<WindyLayerBarProps> = ({
   layers,
   onToggleLayer,
+  theme = 'dark',
+  mapControls,
 }) => {
   const layerItems: {
     key: keyof WindyActiveLayers;
     name: string;
-    description: string;
-    icon: React.ReactNode;
-    color: string;
-    glowClass: string;
+    thumbnail: React.ReactNode;
   }[] = [
     {
       key: 'windParticles',
-      name: 'Wind & Streamlines',
-      description: 'Dynamic particle flow & Rankine vortex',
-      icon: <WindStreamIcon className="w-4 h-4" />,
-      color: 'text-cyan-400',
-      glowClass: 'bg-cyan-500/20 text-cyan-300 border-cyan-400/80 shadow-[0_0_15px_rgba(6,182,212,0.35)]',
+      name: 'Wind',
+      thumbnail: (
+        <div
+          className="w-full h-full rounded-full flex items-center justify-center"
+          style={{
+            background: 'radial-gradient(circle, #22c55e 0%, #15803d 40%, #a855f7 85%, #ec4899 100%)',
+          }}
+        >
+          <svg className="w-3.5 h-3.5 text-white/90" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path d="M 12 4 C 17 4 20 7 20 12 C 20 16 16 19 12 19" strokeLinecap="round" />
+            <circle cx="12" cy="12" r="2" fill="white" />
+          </svg>
+        </div>
+      ),
     },
     {
       key: 'rainRadar',
-      name: 'Rain & Convection',
-      description: 'Doppler radar reflectivity dBZ',
-      icon: <CloudRain className="w-4 h-4" />,
-      color: 'text-lime-400',
-      glowClass: 'bg-lime-500/20 text-lime-300 border-lime-400/80 shadow-[0_0_15px_rgba(163,230,53,0.35)]',
+      name: 'Weather radar',
+      thumbnail: (
+        <div
+          className="w-full h-full rounded-full flex items-center justify-center"
+          style={{
+            background: 'linear-gradient(135deg, #22c55e 0%, #eab308 45%, #ef4444 80%, #a855f7 100%)',
+          }}
+        >
+          <div className="w-2 h-2 rounded-full bg-white/90" />
+        </div>
+      ),
     },
     {
       key: 'thermalIR',
-      name: 'Satellite IR (Dvorak)',
-      description: 'Cold convective cloud-top temps',
-      icon: <Flame className="w-4 h-4" />,
-      color: 'text-rose-400',
-      glowClass: 'bg-rose-500/20 text-rose-300 border-rose-400/80 shadow-[0_0_15px_rgba(244,63,94,0.35)]',
-    },
-    {
-      key: 'waterVapor',
-      name: 'Water Vapor',
-      description: 'Upper troposphere moisture channel',
-      icon: <Waves className="w-4 h-4" />,
-      color: 'text-sky-400',
-      glowClass: 'bg-sky-500/20 text-sky-300 border-sky-400/80 shadow-[0_0_15px_rgba(56,189,248,0.35)]',
-    },
-    {
-      key: 'waves',
-      name: 'Waves & Swell',
-      description: 'Significant wave height & storm surge',
-      icon: <Activity className="w-4 h-4" />,
-      color: 'text-blue-400',
-      glowClass: 'bg-blue-500/20 text-blue-300 border-blue-400/80 shadow-[0_0_15px_rgba(59,130,246,0.35)]',
-    },
-    {
-      key: 'pressure',
-      name: 'Pressure & Isobars',
-      description: 'Mean Sea Level Pressure (MSLP)',
-      icon: <Compass className="w-4 h-4" />,
-      color: 'text-amber-400',
-      glowClass: 'bg-amber-500/20 text-amber-300 border-amber-400/80 shadow-[0_0_15px_rgba(245,158,11,0.35)]',
-    },
-    {
-      key: 'gradCam',
-      name: 'AI Grad-CAM Attention',
-      description: 'SigLIP neural focal activations',
-      icon: <Sparkles className="w-4 h-4" />,
-      color: 'text-purple-400',
-      glowClass: 'bg-purple-500/20 text-purple-300 border-purple-400/80 shadow-[0_0_15px_rgba(168,85,247,0.35)]',
+      name: 'Satellite (IR)',
+      thumbnail: (
+        <div
+          className="w-full h-full rounded-full overflow-hidden"
+          style={{
+            background: 'radial-gradient(circle at 35% 35%, #93c5fd 0%, #1e40af 50%, #0f172a 100%)',
+          }}
+        >
+          <div className="w-full h-full flex items-center justify-center">
+            <svg className="w-4 h-4 text-white/80" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M 6 8 C 9 6 15 7 18 10 C 16 12 13 11 11 13 C 9 15 10 17 8 18 C 6 16 5 12 6 8 Z" />
+            </svg>
+          </div>
+        </div>
+      ),
     },
     {
       key: 'trackAndCone',
-      name: 'Track & Uncertainty Cone',
-      description: 'JTWC / IMD official track forecast',
-      icon: <Layers className="w-4 h-4" />,
-      color: 'text-amber-300',
-      glowClass: 'bg-amber-500/20 text-amber-300 border-amber-400/80 shadow-[0_0_15px_rgba(251,191,36,0.35)]',
+      name: 'Track & Cone',
+      thumbnail: (
+        <div
+          className="w-full h-full rounded-full flex items-center justify-center"
+          style={{
+            background: 'radial-gradient(circle, #ef4444 0%, #991b1b 55%, #475569 90%)',
+          }}
+        >
+          <svg className="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path d="M 12 3 C 17 3 20 7 20 12 C 20 15 17 18 14 19" />
+            <path d="M 12 21 C 7 21 4 17 4 12 C 4 9 7 6 10 5" />
+            <circle cx="12" cy="12" r="1.5" fill="white" />
+          </svg>
+        </div>
+      ),
+    },
+    {
+      key: 'pressure',
+      name: 'Pressure',
+      thumbnail: (
+        <div
+          className="w-full h-full rounded-full flex items-center justify-center bg-cyan-950"
+        >
+          <span className="text-[8px] font-bold font-mono text-cyan-300">1008</span>
+        </div>
+      ),
+    },
+    {
+      key: 'waterVapor',
+      name: 'Clouds',
+      thumbnail: (
+        <div
+          className="w-full h-full rounded-full"
+          style={{
+            background: 'radial-gradient(circle, #e2e8f0 0%, #94a3b8 45%, #334155 100%)',
+          }}
+        />
+      ),
+    },
+    {
+      key: 'waves',
+      name: 'Waves',
+      thumbnail: (
+        <div
+          className="w-full h-full rounded-full"
+          style={{
+            background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #d946ef 100%)',
+          }}
+        />
+      ),
+    },
+    {
+      key: 'gradCam',
+      name: 'AI Attention',
+      thumbnail: (
+        <div
+          className="w-full h-full rounded-full flex items-center justify-center"
+          style={{
+            background: 'radial-gradient(circle, #facc15 0%, #ef4444 50%, #7c3aed 100%)',
+          }}
+        >
+          <span className="text-[7px] font-black text-black font-mono">AI</span>
+        </div>
+      ),
     },
     {
       key: 'satelliteBasemap',
-      name: 'Satellite / Dark Basemap',
-      description: 'Switch between CARTO Dark & Esri Imagery',
-      icon: <Globe className="w-4 h-4" />,
-      color: 'text-emerald-400',
-      glowClass: 'bg-emerald-500/20 text-emerald-300 border-emerald-400/80 shadow-[0_0_15px_rgba(52,211,153,0.35)]',
+      name: 'Satellite Map',
+      thumbnail: (
+        <div
+          className="w-full h-full rounded-full overflow-hidden"
+          style={{
+            background: 'linear-gradient(135deg, #065f46 0%, #1e3a8a 50%, #0369a1 100%)',
+          }}
+        >
+          <div className="w-full h-full flex items-center justify-center">
+            <svg className="w-3.5 h-3.5 text-emerald-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M 2 12 H 22" />
+            </svg>
+          </div>
+        </div>
+      ),
     },
   ];
 
-  return (
-    <aside className="select-none flex flex-col gap-1.5 p-2 rounded-2xl bg-zinc-950/85 backdrop-blur-xl border border-zinc-800/90 shadow-2xl z-30 transition-all max-w-[230px]">
-      {/* Header */}
-      <div className="flex items-center justify-between px-2 py-1 border-b border-zinc-800/80 mb-0.5">
-        <div className="flex items-center gap-1.5 text-[11px] font-bold tracking-wider uppercase text-zinc-300">
-          <Layers className="w-3.5 h-3.5 text-cyan-400" />
-          <span>Weather Layers</span>
-        </div>
-        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-zinc-900 text-zinc-400 border border-zinc-800">
-          WINDY STYLE
-        </span>
-      </div>
+  const isLight = theme === 'light';
 
-      {/* Layer Buttons Stack */}
-      <div className="flex flex-col gap-1">
+  return (
+    <aside className="select-none flex flex-col items-end gap-1.5 z-30 pointer-events-auto">
+      {/* Scrollable container for layers to guarantee no vertical overflow on low-height screens */}
+      <div className="flex flex-col items-end gap-1.5 max-h-[calc(100vh-230px)] overflow-y-auto no-scrollbar pr-0.5">
         {layerItems.map((item) => {
           const isActive = layers[item.key];
           return (
             <button
               key={item.key}
               onClick={() => onToggleLayer(item.key)}
-              className={`group flex items-center justify-between px-2.5 py-1.5 rounded-xl text-left text-xs transition-all duration-200 border ${
+              className={`group flex items-center gap-2 pl-3.5 pr-1 py-0.5 rounded-full text-xs transition-all duration-150 shadow-md cursor-pointer ${
                 isActive
-                  ? item.glowClass
-                  : 'bg-zinc-900/60 hover:bg-zinc-900 border-zinc-800/70 text-zinc-300 hover:text-white'
+                  ? isLight
+                    ? 'bg-white text-sky-700 font-semibold border border-sky-300 ring-2 ring-sky-100 shadow-md'
+                    : 'bg-[#222228] text-white font-medium border border-zinc-600 ring-1 ring-white/10 shadow-lg'
+                  : isLight
+                  ? 'bg-white/90 hover:bg-white backdrop-blur-md text-slate-700 hover:text-slate-900 border border-slate-250 shadow-xs'
+                  : 'bg-[#16161a]/90 hover:bg-[#202026] backdrop-blur-md text-zinc-200 hover:text-white border border-zinc-800'
               }`}
-              title={item.description}
             >
-              <div className="flex items-center gap-2 min-w-0">
-                <div
-                  className={`p-1 rounded-lg transition-transform group-hover:scale-110 ${
-                    isActive ? 'bg-black/40' : 'bg-black/30 text-zinc-400'
-                  }`}
-                >
-                  {item.icon}
-                </div>
-                <div className="truncate">
-                  <div className="font-semibold text-xs leading-tight truncate">
-                    {item.name}
-                  </div>
-                </div>
-              </div>
+              {/* Left text label */}
+              <span className="text-xs tracking-tight whitespace-nowrap leading-none select-none">
+                {item.name}
+              </span>
 
-              {/* Status Indicator Dot */}
-              <div className="shrink-0 ml-1.5 flex items-center">
-                <span
-                  className={`w-2 h-2 rounded-full transition-all ${
-                    isActive
-                      ? 'bg-cyan-400 shadow-[0_0_8px_#22d3ee] scale-110'
-                      : 'bg-zinc-700 opacity-60'
-                  }`}
-                />
+              {/* Right circular thumbnail icon (borderless) */}
+              <div
+                className="w-7 h-7 rounded-full overflow-hidden shrink-0 transition-transform group-hover:scale-105"
+              >
+                {item.thumbnail}
               </div>
             </button>
           );
         })}
       </div>
+
+      {/* Sleek Map Navigation & 3D Tools Stack (Guaranteed never to overlap layers) */}
+      {mapControls && (
+        <div className="flex flex-col items-end gap-1.5 pt-1.5 mt-0.5 border-t border-zinc-800/80 dark:border-zinc-800/80 light:border-slate-300 w-full">
+          {/* Projection & Spin Tools Row */}
+          <div className="flex items-center gap-1.5">
+            {/* Real 3D Earth Spin Button */}
+            <button
+              onClick={mapControls.toggleEarthSpin}
+              className={`group flex items-center justify-center w-8 h-8 rounded-full transition-all cursor-pointer shadow-md ${
+                mapControls.isSpinning
+                  ? 'bg-cyan-500 text-black shadow-lg shadow-cyan-500/40 ring-2 ring-cyan-300'
+                  : isLight
+                  ? 'bg-white/90 hover:bg-white text-slate-700 hover:text-cyan-600 border border-slate-250 shadow-xs'
+                  : 'bg-[#16161a]/90 hover:bg-[#202026] text-zinc-300 hover:text-cyan-400 border border-zinc-800'
+              }`}
+              title={mapControls.isSpinning ? 'Stop Real 3D Earth Spin' : 'Spin Real 3D Earth (Planetary Rotation)'}
+            >
+              <Globe className={`w-4 h-4 ${mapControls.isSpinning ? 'animate-spin' : 'group-hover:scale-110 transition-transform'}`} />
+            </button>
+
+            {/* 3D Globe vs 2D Flat Toggle */}
+            <button
+              onClick={mapControls.toggleProjection}
+              className={`group flex items-center gap-1 px-3 h-8 rounded-full text-[10px] font-bold font-mono transition-all cursor-pointer shadow-md ${
+                mapControls.isGlobe
+                  ? isLight
+                    ? 'bg-sky-50 text-sky-700 border border-sky-300 ring-1 ring-sky-200'
+                    : 'bg-blue-500/20 text-blue-300 border border-blue-500/40 ring-1 ring-blue-500/30'
+                  : isLight
+                  ? 'bg-white/90 hover:bg-white text-slate-700 hover:text-slate-900 border border-slate-250'
+                  : 'bg-[#16161a]/90 hover:bg-[#202026] text-zinc-300 hover:text-white border border-zinc-800'
+              }`}
+              title={mapControls.isGlobe ? 'Switch to 2D Flat Projection' : 'Switch to 3D Spherical Globe'}
+            >
+              <span>{mapControls.isGlobe ? '3D GLOBE' : '2D FLAT'}</span>
+            </button>
+          </div>
+
+          {/* Recenter & Zoom Controls Row */}
+          <div className="flex items-center gap-1.5">
+            {/* Recenter on Cyclone Eye */}
+            <button
+              onClick={mapControls.recenter}
+              className={`group flex items-center justify-center w-8 h-8 rounded-full transition-all cursor-pointer shadow-md ${
+                isLight
+                  ? 'bg-white/90 hover:bg-white text-cyan-600 hover:text-cyan-700 border border-slate-250'
+                  : 'bg-[#16161a]/90 hover:bg-[#202026] text-cyan-400 hover:text-cyan-300 border border-zinc-800'
+              }`}
+              title="Recenter on Cyclone Eye"
+            >
+              <Compass className="w-4 h-4 group-hover:rotate-45 transition-transform" />
+            </button>
+
+            {/* Zoom In / Zoom Out Combined Pill */}
+            <div
+              className={`flex items-center rounded-full p-0.5 border shadow-md ${
+                isLight
+                  ? 'bg-white/90 border-slate-250 text-slate-700'
+                  : 'bg-[#16161a]/90 border-zinc-800 text-zinc-300'
+              }`}
+            >
+              <button
+                onClick={mapControls.zoomIn}
+                className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-zinc-700/50 light:hover:bg-slate-200 transition-colors cursor-pointer"
+                title="Zoom In"
+              >
+                <Plus className="w-3.5 h-3.5" />
+              </button>
+              <div className={`w-px h-3.5 ${isLight ? 'bg-slate-300' : 'bg-zinc-700'}`} />
+              <button
+                onClick={mapControls.zoomOut}
+                className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-zinc-700/50 light:hover:bg-slate-200 transition-colors cursor-pointer"
+                title="Zoom Out"
+              >
+                <Minus className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </aside>
   );
 };

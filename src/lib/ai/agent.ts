@@ -188,7 +188,44 @@ export async function processUserCopilotQuery(
     };
   }
 
-  // Default deep agent response
+  // What is happening / Overall situation query (Exact user workflow)
+  if (
+    queryLower.includes('what is happening') ||
+    queryLower.includes("what's happening") ||
+    queryLower.includes('tell me about') ||
+    queryLower.includes('happening with') ||
+    queryLower.includes('current situation') ||
+    queryLower.includes('explain storm') ||
+    queryLower.includes('cyclone')
+  ) {
+    addLog('get_current_storm', { storm_id: storm.id }, `Status: ${storm.currentPoint.category} | MSW: ${storm.currentPoint.windSpeedKnots} kts (${storm.currentPoint.windSpeedKmh} km/h) | Pressure: ${storm.currentPoint.pressureHpa} hPa | Eye: ${storm.currentPoint.lat}°N, ${storm.currentPoint.lng}°E`, 92);
+    addLog('get_recent_observations', { storm_id: storm.id, lookback_hours: 18 }, `Observed past 3 fixes: Wind increased from ${storm.currentPoint.windSpeedKnots - storm.trend.windDelta6h} kts to ${storm.currentPoint.windSpeedKnots} kts; Pressure dropped by ${Math.abs(storm.trend.pressureDelta6h)} hPa`, 110);
+    addLog('analyze_satellite', { storm_id: storm.id, channel: 'multi_source' }, `SigLIP Zero-Shot Pattern: Organizing (${(storm.patternScores.organizing * 100).toFixed(0)}%), Mature (${(storm.patternScores.mature * 100).toFixed(0)}%), Eye-wall index: ${(storm.patternScores.eyeWallDefinition * 100).toFixed(0)}%`, 140);
+    addLog('get_trend', { storm_id: storm.id }, `Trend: ${storm.trend.trendStatus} | Dvorak: ${storm.trend.dvorakTNumber} | Wind Delta: +${storm.trend.windDelta6h} kts/6h | Organization Delta: +${storm.trend.organizationDelta6h}`, 80);
+    addLog('search_official_sources', { query: `IMD official bulletin ${storm.name}` }, `IMD Bulletin ${storm.imdBulletins[0]?.bulletinNo || '08'}: "${storm.imdBulletins[0]?.headline || 'Severe Cyclonic Storm Warning'}"`, 95);
+
+    return {
+      text: `### 🌪️ Synoptic Intelligence Brief: ${storm.name}\n\n` +
+        `**${storm.name}** is currently classified as an **${storm.patternScores.dominantPattern.toLowerCase()} system** (**${storm.currentPoint.category}**) centered at **${storm.currentPoint.lat.toFixed(1)}°N, ${storm.currentPoint.lng.toFixed(1)}°E** with sustained winds of **${storm.currentPoint.windSpeedKnots} kts** (${storm.currentPoint.windSpeedKmh} km/h).\n\n` +
+        `* 📈 **Observation Dynamics:** Wind has increased over the last three observations (**+${storm.trend.windDelta6h} kts**), while central pressure has steadily decreased to **${storm.currentPoint.pressureHpa} hPa** (${storm.trend.pressureDelta6h} hPa over 6 hours).\n` +
+        `* 🛰️ **Multi-Source Satellite Intelligence:** Normalization across INSAT-3DR (10.8µm) and Meteosat-9 (6.9µm WV) analyzed via our **SigLIP zero-shot model** shows increasing convective organization (**${(storm.patternScores.organizing * 100).toFixed(0)}%** score, eyewall symmetry at **${(storm.patternScores.eyeWallDefinition * 100).toFixed(0)}%**).\n` +
+        `* 🧠 **IBTrACS ML Prediction:** Our lightweight Random Forest model trained on North Indian Basin historical analogs predicts **further evolution toward a mature pattern**, with projected landfall near **${storm.prediction.predictedLandfallLocation}** at **${storm.prediction.predictedLandfallTime}** (Surge: **${storm.prediction.expectedSurgeHeightMeters}m**).\n` +
+        `* 🚨 **Official IMD Bulletin (${storm.imdBulletins[0]?.bulletinNo || '08'}):** *"${storm.imdBulletins[0]?.headline || 'Severe Storm Warning'}"* — ${storm.imdBulletins[0]?.synopsis || 'Mandatory safety warnings active in coastal zones.'}`,
+      toolLogs,
+      structuredCard: {
+        type: 'telemetry_card',
+        data: {
+          name: storm.name,
+          category: storm.currentPoint.category,
+          msw: `${storm.currentPoint.windSpeedKmh} km/h`,
+          pressure: `${storm.currentPoint.pressureHpa} hPa`,
+          movement: `${storm.currentPoint.movementHeadingText} @ ${storm.currentPoint.movementSpeedKmh} km/h`,
+        },
+      },
+    };
+  }
+
+  // Default fallback deep agent response
   addLog('get_current_storm', { storm_id: storm.id }, `Storm: ${storm.name}, Category: ${storm.currentPoint.category}, Lat: ${storm.currentPoint.lat}°N, Lng: ${storm.currentPoint.lng}°E, Wind: ${storm.currentPoint.windSpeedKmh} km/h, Pressure: ${storm.currentPoint.pressureHpa} hPa`);
   addLog('get_recent_observations', { storm_id: storm.id, lookback_hours: 6 }, `Recent movement heading ${storm.currentPoint.movementHeadingText} at ${storm.currentPoint.movementSpeedKmh} km/h`);
   addLog('analyze_satellite', { storm_id: storm.id, channel: 'thermal_ir' }, `SigLIP Stage: ${storm.patternScores.dominantPattern} (Score: ${storm.patternScores.mature})`);
