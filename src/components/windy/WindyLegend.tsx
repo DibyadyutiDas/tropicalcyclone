@@ -3,16 +3,19 @@
 import React from 'react';
 
 interface WindyLegendProps {
-  activeLayer: string;
+  activeLayer?: string;
   unit: 'kts' | 'kmh' | 'mph';
   onToggleUnit: (unit: 'kts' | 'kmh' | 'mph') => void;
+  theme?: 'dark' | 'light';
 }
 
 export const WindyLegend: React.FC<WindyLegendProps> = ({
   activeLayer = 'wind',
   unit = 'kts',
   onToggleUnit,
+  theme = 'dark',
 }) => {
+  const isLight = theme === 'light';
   // Wind scale values for kts, kmh, mph
   const scales = {
     kts: [
@@ -53,20 +56,30 @@ export const WindyLegend: React.FC<WindyLegendProps> = ({
   const currentScale = scales[unit] || scales.kts;
 
   return (
-    <div className="select-none flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#16161a]/95 backdrop-blur-xl border border-zinc-700/80 shadow-2xl text-zinc-200 text-xs">
+    <div className={`select-none flex items-center gap-2 px-3 py-1.5 rounded-xl backdrop-blur-xl border shadow-2xl text-xs ${
+      isLight
+        ? 'bg-white/95 border-slate-300 text-slate-800'
+        : 'bg-[#16161a]/95 border-zinc-700/80 text-zinc-200'
+    }`}>
       {/* Layer title & Unit switcher button */}
-      <div className="flex items-center gap-1.5 pr-2 border-r border-zinc-700/80">
-        <span className="font-semibold text-white uppercase text-[10px] tracking-wider">
+      <div className={`flex items-center gap-1.5 pr-2 border-r ${isLight ? 'border-slate-300' : 'border-zinc-700/80'}`}>
+        <span className={`font-semibold uppercase text-[10px] tracking-wider ${isLight ? 'text-slate-900' : 'text-white'}`}>
           Wind Speed
         </span>
-        <div className="flex bg-[#222228] rounded-lg p-0.5 border border-zinc-700 text-[10px] font-mono">
+        <div className={`flex rounded-lg p-0.5 border text-[10px] font-mono ${
+          isLight ? 'bg-slate-100 border-slate-300' : 'bg-[#222228] border-zinc-700'
+        }`}>
           {(['kts', 'kmh', 'mph'] as const).map((u) => (
             <button
               key={u}
               onClick={() => onToggleUnit(u)}
-              className={`px-1.5 py-0.5 rounded-md transition-colors ${
+              className={`px-1.5 py-0.5 rounded-md transition-colors cursor-pointer ${
                 unit === u
-                  ? 'bg-cyan-500 text-black font-bold'
+                  ? isLight
+                    ? 'bg-sky-500 text-white font-bold'
+                    : 'bg-cyan-500 text-black font-bold'
+                  : isLight
+                  ? 'text-slate-600 hover:text-slate-950'
                   : 'text-zinc-400 hover:text-white'
               }`}
             >
@@ -80,14 +93,14 @@ export const WindyLegend: React.FC<WindyLegendProps> = ({
       <div className="flex flex-col gap-0.5">
         {/* Color bar gradient */}
         <div
-          className="h-2.5 w-44 sm:w-56 rounded-full overflow-hidden border border-white/10"
+          className="h-2.5 w-44 sm:w-56 rounded-full overflow-hidden border border-black/10 dark:border-white/10"
           style={{
             background:
               'linear-gradient(to right, #1e3a8a, #0284c7, #06b6d4, #10b981, #eab308, #f97316, #ef4444, #a855f7, #ec4899, #ffffff)',
           }}
         />
         {/* Scale labels */}
-        <div className="flex justify-between text-[9px] font-mono text-zinc-400 px-0.5">
+        <div className={`flex justify-between text-[9px] font-mono px-0.5 ${isLight ? 'text-slate-500' : 'text-zinc-400'}`}>
           {currentScale.map((s, idx) => (
             <span key={idx}>{s.val}</span>
           ))}

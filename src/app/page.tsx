@@ -8,6 +8,7 @@ import { getAllWindyStorms, fetchLiveWindyStorms } from '@/lib/data/stormSenseAd
 import { TopNav } from '@/components/dashboard/TopNav';
 import { WindyLayerBar, WindyActiveLayers, MapNavigationControls } from '@/components/windy/WindyLayerBar';
 import { WindyTimeline } from '@/components/windy/WindyTimeline';
+
 import { WindyLeftHUD } from '@/components/windy/WindyLeftHUD';
 import { WindySpotPicker, SpotPickerData } from '@/components/windy/WindySpotPicker';
 import { MobileFilterDrawer } from '@/components/windy/MobileFilterDrawer';
@@ -118,10 +119,14 @@ function WindyDashboardContent() {
         document.documentElement.classList.add('light');
         document.documentElement.classList.remove('dark');
         document.documentElement.setAttribute('data-theme', 'light');
+        document.body.classList.add('light');
+        document.body.classList.remove('dark');
       } else {
         document.documentElement.classList.add('dark');
         document.documentElement.classList.remove('light');
         document.documentElement.setAttribute('data-theme', 'dark');
+        document.body.classList.add('dark');
+        document.body.classList.remove('light');
       }
     }
   }, [theme]);
@@ -199,6 +204,7 @@ function WindyDashboardContent() {
         {spotData && (
           <WindySpotPicker
             data={spotData}
+            theme={theme}
             onClose={() => setSpotData(null)}
           />
         )}
@@ -262,12 +268,13 @@ function WindyDashboardContent() {
 
         {/* Bottom Docked Forecast Timeline Scrubber (Offset to prevent overlapping left sidebar) */}
         <div
-          className={`absolute bottom-0 z-20 flex justify-center pointer-events-none transition-all duration-300 ${
+          className={`absolute bottom-0 z-20 flex flex-col items-center pointer-events-none transition-all duration-300 ${
             isSidebarOpen
               ? 'left-12 sm:left-[380px] right-0'
               : 'left-12 right-0'
           }`}
         >
+
           <div className="w-full max-w-3xl pointer-events-auto px-2">
             <WindyTimeline
               timeline={selectedStorm.timeline}

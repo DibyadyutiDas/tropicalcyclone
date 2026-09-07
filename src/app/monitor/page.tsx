@@ -149,7 +149,7 @@ export default function MonitorPage() {
               href="/chat"
               className="text-sm font-medium text-slate-600 hover:text-slate-900"
             >
-              AI Copilot
+              Cyra AI
             </Link>
           </div>
         </div>

@@ -28,7 +28,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({ storm }) => {
   }[] = [
     {
       id: 'chat',
-      label: 'Chat',
+      label: 'Cyra AI',
       icon: <Bot className="w-3.5 h-3.5" />,
     },
     {

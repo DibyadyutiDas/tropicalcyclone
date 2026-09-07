@@ -233,7 +233,7 @@ export async function processUserCopilotQuery(
   addLog('search_official_sources', { query: `${storm.name} overview` }, `Active Red Alert. Landfall projected in ~16.5 hours.`);
 
   return {
-    text: `### 🌪️ StormSense AI Overview: ${storm.name}\n\n` +
+    text: `### 🌪️ Cyra AI Overview: ${storm.name}\n\n` +
       `**${storm.name}** is currently classified as a **${storm.currentPoint.category}** over the ${storm.basin}.\n\n` +
       `* **Center Location:** ${storm.currentPoint.lat.toFixed(1)}°N, ${storm.currentPoint.lng.toFixed(1)}°E\n` +
       `* **Max Sustained Wind (MSW):** **${storm.currentPoint.windSpeedKnots} knots** (${storm.currentPoint.windSpeedKmh} km/h)\n` +

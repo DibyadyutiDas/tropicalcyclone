@@ -2,7 +2,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import {
-  Bot,
   Loader2,
   Send,
   Terminal,
@@ -12,12 +11,14 @@ import { processUserCopilotQuery } from '@/lib/ai/agent';
 
 interface AIChatCopilotProps {
   storm: Storm;
+  theme?: 'dark' | 'light';
 }
 
 let msgIdCounter = 0;
 const generateId = (prefix: string) => `${prefix}-${++msgIdCounter}`;
 
-export const AIChatCopilot: React.FC<AIChatCopilotProps> = ({ storm }) => {
+export const AIChatCopilot: React.FC<AIChatCopilotProps> = ({ storm, theme = 'dark' }) => {
+  const isLight = theme === 'light';
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputQuery, setInputQuery] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -76,33 +77,11 @@ export const AIChatCopilot: React.FC<AIChatCopilotProps> = ({ storm }) => {
   ];
 
   return (
-    <div className="flex flex-col h-full bg-[#16161a] text-zinc-100 overflow-hidden text-xs">
+    <div className={`flex flex-col h-full overflow-hidden text-xs ${
+      isLight ? 'bg-slate-50 text-slate-800' : 'bg-[#16161a] text-zinc-100'
+    }`}>
       {/* Messages Scroll Area */}
       <div className="flex-1 overflow-y-auto p-2.5 space-y-2.5 custom-scrollbar">
-        {messages.length === 0 && (
-          <div className="p-2.5 rounded-lg bg-[#141418] border border-zinc-800 flex flex-col gap-1.5">
-            <div className="flex items-center justify-between text-[11px] font-semibold text-zinc-200">
-              <span className="flex items-center gap-1.5">
-                <Bot className="w-3.5 h-3.5 text-zinc-400" />
-                Diagnostic Agent Interface
-              </span>
-              <span className="text-[9px] font-mono text-zinc-500">8 Tools Connected</span>
-            </div>
-            <p className="text-[11px] text-zinc-400 leading-relaxed">
-              Queries storm telemetry, multi-source satellite streams, SigLIP zero-shot stages, observation trend deltas, and IBTrACS prediction models.
-            </p>
-
-            <div className="p-1.5 rounded bg-[#0d0d10] border border-zinc-800/80 font-mono text-[9px] text-zinc-500 grid grid-cols-2 gap-1 mt-1">
-              <div>• get_current_storm()</div>
-              <div>• get_recent_observations()</div>
-              <div>• analyze_satellite()</div>
-              <div>• get_trend()</div>
-              <div>• get_prediction()</div>
-              <div>• search_official_sources()</div>
-            </div>
-          </div>
-        )}
-
         {messages.map((msg) => (
           <div
             key={msg.id}
@@ -111,8 +90,10 @@ export const AIChatCopilot: React.FC<AIChatCopilotProps> = ({ storm }) => {
             }`}
           >
             {/* Timestamp Header */}
-            <div className="flex items-center gap-1 mb-0.5 px-1 text-[9px] text-zinc-500 font-mono">
-              <span>{msg.sender === 'user' ? 'Operator' : 'Agent'}</span>
+            <div className={`flex items-center gap-1 mb-0.5 px-1 text-[9px] font-mono ${
+              isLight ? 'text-slate-400' : 'text-zinc-500'
+            }`}>
+              <span>{msg.sender === 'user' ? 'Operator' : 'Cyra AI'}</span>
               <span>•</span>
               <span>{msg.timestamp}</span>
             </div>
@@ -121,28 +102,36 @@ export const AIChatCopilot: React.FC<AIChatCopilotProps> = ({ storm }) => {
             <div
               className={`max-w-[95%] rounded-lg px-2.5 py-2 text-xs leading-relaxed ${
                 msg.sender === 'user'
-                  ? 'bg-zinc-800 text-zinc-100 border border-zinc-700'
-                  : 'bg-[#141418] text-zinc-200 border border-zinc-800'
+                  ? isLight
+                    ? 'bg-sky-600 text-white'
+                    : 'bg-zinc-800 text-zinc-100 border border-zinc-700'
+                  : isLight
+                    ? 'bg-white text-slate-800 border border-slate-200'
+                    : 'bg-[#141418] text-zinc-200 border border-zinc-800'
               }`}
             >
               {/* Tool Execution Logs */}
               {msg.toolCalls && msg.toolCalls.length > 0 && (
-                <div className="mb-2 p-1.5 rounded bg-[#0d0d10] border border-zinc-800 font-mono text-[9px]">
-                  <div className="flex items-center justify-between text-zinc-400 font-medium mb-1">
+                <div className={`mb-2 p-1.5 rounded border font-mono text-[9px] ${
+                  isLight ? 'bg-slate-50 border-slate-200' : 'bg-[#0d0d10] border-zinc-800'
+                }`}>
+                  <div className={`flex items-center justify-between font-medium mb-1 ${
+                    isLight ? 'text-slate-600' : 'text-zinc-400'
+                  }`}>
                     <span className="flex items-center gap-1">
-                      <Terminal className="w-3 h-3 text-zinc-400" />
+                      <Terminal className="w-3 h-3" />
                       Tools Executed ({msg.toolCalls.length})
                     </span>
                   </div>
 
-                  <div className="space-y-1 text-zinc-400">
+                  <div className={`space-y-1 ${isLight ? 'text-slate-600' : 'text-zinc-400'}`}>
                     {msg.toolCalls.map((tool) => (
-                      <div key={tool.id} className="border-t border-zinc-800/80 pt-0.5">
-                        <div className="flex items-center justify-between text-zinc-300">
-                          <span className="text-zinc-200">→ {tool.toolName}()</span>
-                          <span className="text-zinc-500 text-[8px]">{tool.executionTimeMs}ms</span>
+                      <div key={tool.id} className={`border-t pt-0.5 ${isLight ? 'border-slate-200' : 'border-zinc-800/80'}`}>
+                        <div className="flex items-center justify-between">
+                          <span className={`font-semibold ${isLight ? 'text-slate-800' : 'text-zinc-200'}`}>→ {tool.toolName}()</span>
+                          <span className={`text-[8px] ${isLight ? 'text-slate-400' : 'text-zinc-500'}`}>{tool.executionTimeMs}ms</span>
                         </div>
-                        <p className="text-zinc-500 text-[8px] mt-0.5 truncate">
+                        <p className={`text-[8px] mt-0.5 truncate ${isLight ? 'text-slate-500' : 'text-zinc-500'}`}>
                           {tool.resultSnippet}
                         </p>
                       </div>
@@ -156,14 +145,18 @@ export const AIChatCopilot: React.FC<AIChatCopilotProps> = ({ storm }) => {
                 {msg.text.split('\n').map((line, idx) => {
                   if (line.startsWith('### ')) {
                     return (
-                      <h4 key={idx} className="font-semibold text-zinc-100 text-xs mt-1 mb-1">
+                      <h4 key={idx} className={`font-semibold text-xs mt-1 mb-1 ${
+                        msg.sender === 'user' ? 'text-white' : isLight ? 'text-slate-900' : 'text-zinc-100'
+                      }`}>
                         {line.replace('### ', '')}
                       </h4>
                     );
                   }
                   if (line.startsWith('#### ')) {
                     return (
-                      <h5 key={idx} className="font-medium text-zinc-300 text-[11px] mt-1">
+                      <h5 key={idx} className={`font-medium text-[11px] mt-1 ${
+                        msg.sender === 'user' ? 'text-sky-100' : isLight ? 'text-slate-700' : 'text-zinc-300'
+                      }`}>
                         {line.replace('#### ', '')}
                       </h5>
                     );
@@ -176,8 +169,10 @@ export const AIChatCopilot: React.FC<AIChatCopilotProps> = ({ storm }) => {
         ))}
 
         {isProcessing && (
-          <div className="flex items-center gap-2 p-2 rounded bg-[#141418] border border-zinc-800 text-[11px] text-zinc-400 font-mono">
-            <Loader2 className="w-3 h-3 animate-spin text-zinc-400" />
+          <div className={`flex items-center gap-2 p-2 rounded border text-[11px] font-mono ${
+            isLight ? 'bg-white border-slate-200 text-slate-600' : 'bg-[#141418] border-zinc-800 text-zinc-400'
+          }`}>
+            <Loader2 className="w-3 h-3 animate-spin" />
             <span>Invoking diagnostic tools...</span>
           </div>
         )}
@@ -186,13 +181,19 @@ export const AIChatCopilot: React.FC<AIChatCopilotProps> = ({ storm }) => {
       </div>
 
       {/* Suggested Prompt Chips */}
-      <div className="p-1.5 border-t border-zinc-800 bg-[#121214] flex items-center gap-1 overflow-x-auto select-none custom-scrollbar">
+      <div className={`p-1.5 border-t flex items-center gap-1 overflow-x-auto select-none custom-scrollbar ${
+        isLight ? 'border-slate-200 bg-slate-100/90' : 'border-zinc-800 bg-[#121214]'
+      }`}>
         {samplePrompts.map((prompt, i) => (
           <button
             key={i}
             onClick={() => handleSendMessage(prompt)}
             disabled={isProcessing}
-            className="h-6 whitespace-nowrap px-2 rounded bg-zinc-800 hover:bg-zinc-700 text-[9px] font-medium text-zinc-300 transition-colors disabled:opacity-50 border border-zinc-700/60"
+            className={`h-6 whitespace-nowrap px-2 rounded text-[9px] font-medium transition-colors disabled:opacity-50 border ${
+              isLight
+                ? 'bg-white hover:bg-slate-50 text-slate-700 border-slate-300'
+                : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border-zinc-700/60'
+            }`}
           >
             {prompt}
           </button>
@@ -200,7 +201,9 @@ export const AIChatCopilot: React.FC<AIChatCopilotProps> = ({ storm }) => {
       </div>
 
       {/* Input Box */}
-      <div className="p-2 border-t border-zinc-800 bg-[#121214]">
+      <div className={`p-2 border-t ${
+        isLight ? 'border-slate-200 bg-slate-100' : 'border-zinc-800 bg-[#121214]'
+      }`}>
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -212,14 +215,20 @@ export const AIChatCopilot: React.FC<AIChatCopilotProps> = ({ storm }) => {
             type="text"
             value={inputQuery}
             onChange={(e) => setInputQuery(e.target.value)}
-            placeholder={`Ask about ${storm.name}...`}
+            placeholder={`Ask Cyra AI about ${storm.name}...`}
             disabled={isProcessing}
-            className="h-7 flex-1 bg-[#1c1c22] border border-zinc-700/80 rounded px-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500 disabled:opacity-50"
+            className={`h-7 flex-1 rounded px-2.5 text-xs focus:outline-none disabled:opacity-50 border ${
+              isLight
+                ? 'bg-white border-slate-300 text-slate-900 placeholder-slate-400 focus:border-sky-500'
+                : 'bg-[#1c1c22] border-zinc-700/80 text-white placeholder-zinc-500 focus:border-zinc-500'
+            }`}
           />
           <button
             type="submit"
             disabled={!inputQuery.trim() || isProcessing}
-            className="h-7 px-2.5 rounded bg-zinc-700 hover:bg-zinc-600 text-white font-medium text-xs flex items-center justify-center transition-colors disabled:opacity-40"
+            className={`h-7 px-2.5 rounded font-medium text-xs flex items-center justify-center transition-colors disabled:opacity-40 text-white ${
+              isLight ? 'bg-sky-600 hover:bg-sky-700' : 'bg-zinc-700 hover:bg-zinc-600'
+            }`}
           >
             <Send className="w-3 h-3 fill-current" />
           </button>

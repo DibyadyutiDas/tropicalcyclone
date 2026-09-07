@@ -18,7 +18,7 @@ const SIDEBAR_ITEMS = [
   { href: "/storms", label: "Storms", icon: "◌" },
   { href: "/live", label: "Live", icon: "●" },
   { href: "/monitor", label: "Monitor", icon: "◎" },
-  { href: "/chat", label: "AI", icon: "◇" },
+  { href: "/chat", label: "Cyra AI", icon: "💬" },
 ];
 
 function toTrackPoints(track: TrackPoint[], observations: Observation[]): TrackPoint[] {

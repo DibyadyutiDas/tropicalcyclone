@@ -29,7 +29,7 @@ export const WindyChatDrawer: React.FC<WindyChatDrawerProps> = ({
             </div>
             <div>
               <h3 className="text-xs font-bold text-white tracking-wide">
-                Cyclone AI Intelligence Copilot
+                Cyra AI · Intelligence Copilot
               </h3>
               <p className="text-[10px] text-zinc-400">
                 Ground-truth synoptic models & Explainable AI

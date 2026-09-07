@@ -117,7 +117,7 @@ export const TopNav: React.FC<TopNavProps> = ({
           {/* Logotype */}
           <div className="flex items-center tracking-wider text-xs sm:text-sm font-bold font-sans">
             <span className={isLight ? 'text-slate-900' : 'text-white'}>STORM</span>
-            <span className="text-cyan-500 font-semibold ml-0.5 hidden xs:inline">SENSE</span>
+            <span className="text-cyan-500 font-semibold ml-0.5 inline">SENSE</span>
             <span
               className={`font-medium text-[9px] tracking-widest ml-1 self-center border px-1 py-0.2 rounded hidden sm:inline ${
                 isLight
@@ -310,7 +310,7 @@ export const TopNav: React.FC<TopNavProps> = ({
                 : 'text-zinc-400 hover:bg-zinc-800/80 hover:text-zinc-200'
             }`}
           >
-            💬 Copilot
+            💬 Cyra AI
           </Link>
         </nav>
       </div>

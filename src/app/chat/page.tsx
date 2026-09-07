@@ -8,7 +8,7 @@ const NAV_ITEMS = [
   { href: "/storms", label: "Storms", icon: "◌" },
   { href: "/live", label: "Live", icon: "●" },
   { href: "/monitor", label: "Monitor", icon: "◎" },
-  { href: "/chat", label: "AI", icon: "◇" },
+  { href: "/chat", label: "Cyra AI", icon: "💬" },
 ];
 
 export default function ChatPage() {

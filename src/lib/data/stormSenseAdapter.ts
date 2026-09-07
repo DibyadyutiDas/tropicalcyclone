@@ -88,10 +88,80 @@ export function convertStormSenseSeedToWindyStorm(seed: {
   }
 
   // Combine track and forecast track
-  const allRawPoints = [
+  let allRawPoints = [
     ...totalPoints.map((p) => ({ ...p, forecast: false })),
     ...forecast_track.map((p) => ({ ...p, forecast: true })),
   ];
+
+  // Fallback if empty
+  if (allRawPoints.length === 0) {
+    allRawPoints.push({
+      timestamp: storm.timestamp || new Date().toISOString(),
+      lat: storm.lat,
+      lon: storm.lon,
+      wind_kt: storm.wind_kt ?? 45,
+      pressure_hpa: storm.pressure_hpa ?? 990,
+      movement_direction: storm.movement_direction || 'north',
+      movement_speed: storm.movement_speed ?? 10,
+      category: storm.category,
+      forecast: false,
+    });
+  }
+
+  // If a live storm only has 1 point, synthesize past track & 48h forecast trajectory
+  if (allRawPoints.length === 1) {
+    const base = allRawPoints[0];
+    const baseTime = new Date(base.timestamp).getTime();
+    const headingDeg = parseHeadingToDegrees(base.movement_direction || storm.movement_direction);
+    const speedKmH = (base.movement_speed ?? storm.movement_speed ?? 10) * 1.852;
+    const rad = (headingDeg * Math.PI) / 180;
+    const baseWind = base.wind_kt ?? 45;
+    const basePressure = base.pressure_hpa ?? 990;
+
+    const synthesized: typeof allRawPoints = [];
+
+    // Hindcast past 3 points (-18h, -12h, -6h)
+    [-18, -12, -6].forEach((h) => {
+      const distKm = speedKmH * Math.abs(h);
+      const dLat = -(distKm * Math.cos(rad)) / 111.32;
+      const dLon = -(distKm * Math.sin(rad)) / (111.32 * Math.cos((base.lat * Math.PI) / 180));
+      const ptWind = Math.max(25, Math.round(baseWind - (Math.abs(h) / 6) * 4));
+      const ptPres = Math.round(basePressure + (Math.abs(h) / 6) * 3);
+      synthesized.push({
+        ...base,
+        timestamp: new Date(baseTime + h * 3600 * 1000).toISOString(),
+        lat: Number((base.lat + dLat).toFixed(2)),
+        lon: Number((base.lon + dLon).toFixed(2)),
+        wind_kt: ptWind,
+        pressure_hpa: ptPres,
+        forecast: false,
+      });
+    });
+
+    // Current point (0h)
+    synthesized.push({ ...base, forecast: false });
+
+    // Forecast points (+6h, +12h, +18h, +24h, +36h, +48h)
+    [6, 12, 18, 24, 36, 48].forEach((h) => {
+      const distKm = speedKmH * h;
+      const dLat = (distKm * Math.cos(rad)) / 111.32;
+      const dLon = (distKm * Math.sin(rad)) / (111.32 * Math.cos((base.lat * Math.PI) / 180));
+      const windDelta = h <= 24 ? Math.round((h / 6) * 3) : Math.round(12 - ((h - 24) / 6) * 4);
+      const ptWind = Math.max(30, baseWind + windDelta);
+      const ptPres = Math.round(basePressure - windDelta * 0.7);
+      synthesized.push({
+        ...base,
+        timestamp: new Date(baseTime + h * 3600 * 1000).toISOString(),
+        lat: Number((base.lat + dLat).toFixed(2)),
+        lon: Number((base.lon + dLon).toFixed(2)),
+        wind_kt: ptWind,
+        pressure_hpa: ptPres,
+        forecast: true,
+      });
+    });
+
+    allRawPoints = synthesized;
+  }
 
   // Sort chronologically
   allRawPoints.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());

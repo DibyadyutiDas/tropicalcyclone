@@ -88,9 +88,9 @@ export const WindyLeftHUD: React.FC<WindyLeftHUDProps> = ({
       case 'copilot':
         return {
           module: 'MODULE 4',
-          title: 'Meteorological AI Copilot',
+          title: 'Cyra AI Copilot',
           subtitle: 'Diagnostic reasoning & synoptic querying',
-          tag: 'Copilot Agent',
+          tag: 'Cyra AI Agent',
         };
     }
   };
@@ -100,16 +100,16 @@ export const WindyLeftHUD: React.FC<WindyLeftHUDProps> = ({
 
   return (
     <div
-      className={`flex select-none h-full pointer-events-auto border-r transition-colors shadow-2xl ${
+      className={`flex select-none h-full pointer-events-auto border-r transition-colors ${
         isLight
-          ? 'border-slate-200 bg-white/95 text-slate-800 backdrop-blur-md'
-          : 'border-zinc-800/90 bg-[#121215]/95 text-zinc-100 backdrop-blur-md'
+          ? 'border-slate-200 bg-white text-slate-800'
+          : 'border-zinc-800 bg-[#121215] text-zinc-100'
       }`}
     >
       {/* 1. LEFT ACTIVITY BAR (Slim 48px Rail) */}
       <aside
         className={`w-12 h-full flex flex-col items-center justify-between py-3 border-r shrink-0 select-none ${
-          isLight ? 'bg-slate-50 border-slate-200' : 'bg-[#0f0f12] border-zinc-800/80'
+          isLight ? 'bg-slate-50 border-slate-200' : 'bg-[#0f0f12] border-zinc-800'
         }`}
       >
         {/* Top: Panel Toggle & 4 Feature Icons */}
@@ -121,10 +121,10 @@ export const WindyLeftHUD: React.FC<WindyLeftHUDProps> = ({
               isOpen
                 ? isLight
                   ? 'text-slate-500 hover:text-slate-900 hover:bg-slate-200/80'
-                  : 'text-zinc-400 hover:text-white hover:bg-zinc-800/80'
+                  : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
                 : isLight
-                ? 'text-sky-700 bg-sky-100/80 border border-sky-300 shadow-sm'
-                : 'text-cyan-300 bg-cyan-500/15 border border-cyan-500/30 shadow-[0_0_10px_rgba(6,182,212,0.2)]'
+                ? 'text-slate-900 bg-slate-200 border border-slate-300'
+                : 'text-white bg-zinc-800 border border-zinc-700'
             }`}
             title={isOpen ? 'Collapse Sidebar' : 'Expand Sidebar'}
             aria-label="Toggle Sidebar"
@@ -143,11 +143,11 @@ export const WindyLeftHUD: React.FC<WindyLeftHUDProps> = ({
             {/* 1. Live Intelligence Layer */}
             <button
               onClick={() => handleTabClick('intelligence')}
-              className={`group relative w-8 h-8 rounded-xl flex items-center justify-center transition-all cursor-pointer ${
+              className={`group relative w-8 h-8 rounded-lg flex items-center justify-center transition-all cursor-pointer ${
                 isOpen && activeTab === 'intelligence'
                   ? isLight
-                    ? 'bg-sky-100 text-sky-700 border border-sky-300 shadow-sm'
-                    : 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 shadow-[0_0_12px_rgba(6,182,212,0.25)]'
+                    ? 'bg-slate-200 text-slate-900 border border-slate-300'
+                    : 'bg-zinc-800 text-white border border-zinc-700'
                   : isLight
                   ? 'text-slate-500 hover:text-slate-900 hover:bg-slate-200/60'
                   : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60'
@@ -155,7 +155,7 @@ export const WindyLeftHUD: React.FC<WindyLeftHUDProps> = ({
               title="1. Live Cyclone Intelligence Layer"
             >
               {isOpen && activeTab === 'intelligence' && (
-                <span className="absolute -left-2 top-1/2 -translate-y-1/2 w-1 h-5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
+                <span className={`absolute -left-2 top-1/2 -translate-y-1/2 w-1 h-5 rounded-full ${isLight ? 'bg-slate-900' : 'bg-zinc-200'}`} />
               )}
               <Globe className="w-4 h-4 transition-transform group-hover:scale-105" />
             </button>
@@ -163,11 +163,11 @@ export const WindyLeftHUD: React.FC<WindyLeftHUDProps> = ({
             {/* 2. Multi-Source Satellite Intelligence */}
             <button
               onClick={() => handleTabClick('satellite')}
-              className={`group relative w-8 h-8 rounded-xl flex items-center justify-center transition-all cursor-pointer ${
+              className={`group relative w-8 h-8 rounded-lg flex items-center justify-center transition-all cursor-pointer ${
                 isOpen && activeTab === 'satellite'
                   ? isLight
-                    ? 'bg-sky-100 text-sky-700 border border-sky-300 shadow-sm'
-                    : 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 shadow-[0_0_12px_rgba(6,182,212,0.25)]'
+                    ? 'bg-slate-200 text-slate-900 border border-slate-300'
+                    : 'bg-zinc-800 text-white border border-zinc-700'
                   : isLight
                   ? 'text-slate-500 hover:text-slate-900 hover:bg-slate-200/60'
                   : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60'
@@ -175,7 +175,7 @@ export const WindyLeftHUD: React.FC<WindyLeftHUDProps> = ({
               title="2. Multi-Source Satellite Intelligence"
             >
               {isOpen && activeTab === 'satellite' && (
-                <span className="absolute -left-2 top-1/2 -translate-y-1/2 w-1 h-5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
+                <span className={`absolute -left-2 top-1/2 -translate-y-1/2 w-1 h-5 rounded-full ${isLight ? 'bg-slate-900' : 'bg-zinc-200'}`} />
               )}
               <Satellite className="w-4 h-4 transition-transform group-hover:scale-105" />
             </button>
@@ -183,11 +183,11 @@ export const WindyLeftHUD: React.FC<WindyLeftHUDProps> = ({
             {/* 3. Cyclone AI Engine */}
             <button
               onClick={() => handleTabClick('ai_engine')}
-              className={`group relative w-8 h-8 rounded-xl flex items-center justify-center transition-all cursor-pointer ${
+              className={`group relative w-8 h-8 rounded-lg flex items-center justify-center transition-all cursor-pointer ${
                 isOpen && activeTab === 'ai_engine'
                   ? isLight
-                    ? 'bg-sky-100 text-sky-700 border border-sky-300 shadow-sm'
-                    : 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 shadow-[0_0_12px_rgba(6,182,212,0.25)]'
+                    ? 'bg-slate-200 text-slate-900 border border-slate-300'
+                    : 'bg-zinc-800 text-white border border-zinc-700'
                   : isLight
                   ? 'text-slate-500 hover:text-slate-900 hover:bg-slate-200/60'
                   : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60'
@@ -195,7 +195,7 @@ export const WindyLeftHUD: React.FC<WindyLeftHUDProps> = ({
               title="3. Cyclone AI Engine"
             >
               {isOpen && activeTab === 'ai_engine' && (
-                <span className="absolute -left-2 top-1/2 -translate-y-1/2 w-1 h-5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
+                <span className={`absolute -left-2 top-1/2 -translate-y-1/2 w-1 h-5 rounded-full ${isLight ? 'bg-slate-900' : 'bg-zinc-200'}`} />
               )}
               <Brain className="w-4 h-4 transition-transform group-hover:scale-105" />
             </button>
@@ -203,19 +203,19 @@ export const WindyLeftHUD: React.FC<WindyLeftHUDProps> = ({
             {/* 4. Deep AI Agent / Copilot */}
             <button
               onClick={() => handleTabClick('copilot')}
-              className={`group relative w-8 h-8 rounded-xl flex items-center justify-center transition-all cursor-pointer ${
+              className={`group relative w-8 h-8 rounded-lg flex items-center justify-center transition-all cursor-pointer ${
                 isOpen && activeTab === 'copilot'
                   ? isLight
-                    ? 'bg-sky-100 text-sky-700 border border-sky-300 shadow-sm'
-                    : 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 shadow-[0_0_12px_rgba(6,182,212,0.25)]'
+                    ? 'bg-slate-200 text-slate-900 border border-slate-300'
+                    : 'bg-zinc-800 text-white border border-zinc-700'
                   : isLight
                   ? 'text-slate-500 hover:text-slate-900 hover:bg-slate-200/60'
                   : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60'
               }`}
-              title="4. Deep AI Agent / Copilot"
+              title="4. Cyra AI Copilot"
             >
               {isOpen && activeTab === 'copilot' && (
-                <span className="absolute -left-2 top-1/2 -translate-y-1/2 w-1 h-5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
+                <span className={`absolute -left-2 top-1/2 -translate-y-1/2 w-1 h-5 rounded-full ${isLight ? 'bg-slate-900' : 'bg-zinc-200'}`} />
               )}
               <Bot className="w-4 h-4 transition-transform group-hover:scale-105" />
             </button>
@@ -230,7 +230,7 @@ export const WindyLeftHUD: React.FC<WindyLeftHUDProps> = ({
               className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all cursor-pointer ${
                 isLight
                   ? 'text-amber-500 hover:bg-amber-100 hover:text-amber-600'
-                  : 'text-zinc-400 hover:text-cyan-300 hover:bg-zinc-800'
+                  : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
               }`}
               title={`Switch to ${isLight ? 'Dark' : 'Light'} theme`}
               aria-label="Toggle Theme"
@@ -247,8 +247,8 @@ export const WindyLeftHUD: React.FC<WindyLeftHUDProps> = ({
             onClick={onRecenter}
             className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all cursor-pointer ${
               isLight
-                ? 'text-slate-500 hover:text-cyan-700 hover:bg-slate-200/80'
-                : 'text-zinc-400 hover:text-cyan-300 hover:bg-zinc-800'
+                ? 'text-slate-500 hover:text-slate-900 hover:bg-slate-200/80'
+                : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
             }`}
             title="Recenter Map on Storm Eye"
           >
@@ -263,18 +263,22 @@ export const WindyLeftHUD: React.FC<WindyLeftHUDProps> = ({
           className={`${
             activeTab === 'copilot' ? 'w-[360px] sm:w-[380px]' : 'w-[330px] sm:w-[350px]'
           } flex flex-col h-full overflow-hidden transition-all ${
-            isLight ? 'bg-slate-50/60 text-slate-800' : 'bg-[#121215] text-zinc-200'
+            isLight ? 'bg-slate-50 text-slate-800' : 'bg-[#121215] text-zinc-200'
           }`}
         >
           {/* Header Bar */}
           <div
             className={`px-3.5 py-2.5 border-b flex items-center justify-between shrink-0 ${
-              isLight ? 'bg-white border-slate-200 shadow-xs' : 'bg-[#151519] border-zinc-800/90'
+              isLight ? 'bg-white border-slate-200' : 'bg-[#151519] border-zinc-800'
             }`}
           >
             <div className="min-w-0 pr-2">
               <div className="flex items-center gap-1.5 mb-0.5">
-                <span className="px-1.5 py-0.2 rounded text-[9px] font-bold tracking-wider uppercase bg-cyan-500/15 text-cyan-400 border border-cyan-500/30">
+                <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold tracking-wider uppercase border ${
+                  isLight
+                    ? 'bg-slate-100 text-slate-700 border-slate-300'
+                    : 'bg-zinc-800 text-zinc-300 border-zinc-700'
+                }`}>
                   {info.module}
                 </span>
                 <span className={`text-[10px] font-medium ${isLight ? 'text-slate-500' : 'text-zinc-400'}`}>
@@ -305,20 +309,20 @@ export const WindyLeftHUD: React.FC<WindyLeftHUDProps> = ({
           {/* Dynamic Content Panel */}
           <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
             {activeTab === 'intelligence' && (
-              <LiveCycloneIntelligence storm={storm} activePoint={activePoint} />
+              <LiveCycloneIntelligence storm={storm} activePoint={activePoint} theme={theme} />
             )}
 
             {activeTab === 'satellite' && (
-              <MultiSourceSatelliteIntel storm={storm} />
+              <MultiSourceSatelliteIntel storm={storm} theme={theme} />
             )}
 
             {activeTab === 'ai_engine' && (
-              <CycloneAIEngine storm={storm} activePoint={activePoint} />
+              <CycloneAIEngine storm={storm} activePoint={activePoint} theme={theme} />
             )}
 
             {activeTab === 'copilot' && (
               <div className="flex-1 min-h-0 overflow-hidden">
-                <AIChatCopilot storm={storm} />
+                <AIChatCopilot storm={storm} theme={theme} />
               </div>
             )}
           </div>

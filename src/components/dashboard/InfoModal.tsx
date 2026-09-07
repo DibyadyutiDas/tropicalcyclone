@@ -86,7 +86,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({ isOpen, onClose }) => {
           <div className="p-3.5 rounded-xl bg-black border border-zinc-800/80 space-y-1.5">
             <div className="flex items-center gap-2 text-emerald-400 font-semibold text-xs">
               <Bot className="w-4 h-4" />
-              <span>4. Deep AI Agent / Copilot</span>
+              <span>4. Cyra AI - Deep Copilot Agent</span>
             </div>
             <p className="text-xs text-zinc-400 leading-relaxed">
               Autonomous reasoning layer with 8 executable tools (<code className="text-cyan-400">get_current_storm</code>, <code className="text-cyan-400">analyze_satellite</code>, <code className="text-cyan-400">get_prediction</code>, <code className="text-cyan-400">search_official_sources</code>).

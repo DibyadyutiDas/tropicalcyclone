@@ -43,8 +43,8 @@ export default function ChatPanel() {
             🌀
           </div>
           <div>
-            <h2 className="text-sm font-bold" style={{ color: "#1a2035" }}>CycloneGPT</h2>
-            <p className="text-[10px] font-medium" style={{ color: "#8b95b0" }}>AI cyclone intelligence agent</p>
+            <h2 className="text-sm font-bold" style={{ color: "#1a2035" }}>Cyra AI</h2>
+            <p className="text-[10px] font-medium" style={{ color: "#8b95b0" }}>StormSense AI cyclone intelligence agent</p>
           </div>
           <span className="flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10px] font-semibold" style={{ background: "#ecfdf5", borderColor: "#6ee7b7", color: "#059669" }}>
             <span className="h-1.5 w-1.5 rounded-full pulse-live" style={{ background: "#10b981" }} />
@@ -82,7 +82,7 @@ export default function ChatPanel() {
               <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl text-3xl shadow-xl" style={{ background: "linear-gradient(135deg,#6366f1,#8b5cf6,#ec4899)" }}>
                 🌀
               </div>
-              <h3 className="text-xl font-bold mb-2" style={{ color: "#1a2035" }}>CycloneGPT</h3>
+              <h3 className="text-xl font-bold mb-2" style={{ color: "#1a2035" }}>Cyra AI</h3>
               <p className="text-sm max-w-xs" style={{ color: "#5a6380" }}>
                 Ask me anything about North Indian Ocean cyclones — tracks, intensity, satellite analysis, and AI predictions.
               </p>
@@ -110,7 +110,7 @@ export default function ChatPanel() {
       <div className="px-4 py-3 border-t shrink-0" style={{ background: "#ffffff", borderColor: "#e4e8f0" }}>
         <div className="flex gap-2 items-end">
           <textarea ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown}
-            placeholder="Ask about a cyclone..."
+            placeholder="Ask Cyra AI about a cyclone..."
             rows={1}
             className="flex-1 rounded-2xl border px-4 py-3 text-sm resize-none outline-none transition-all"
             style={{ background: "#f4f6fb", borderColor: input ? "#c7d2fe" : "#e4e8f0", color: "#1a2035", boxShadow: input ? "0 0 0 3px rgba(99,102,241,0.12)" : "none" }}
@@ -130,7 +130,7 @@ export default function ChatPanel() {
           )}
         </div>
         <div className="mt-2 text-[10px] text-center" style={{ color: "#c4c9dc" }}>
-          Powered by StormSense AI · North Indian Ocean Basin
+          Powered by StormSense · Cyra AI Copilot
         </div>
       </div>
     </div>

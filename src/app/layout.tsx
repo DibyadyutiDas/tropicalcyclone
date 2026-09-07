@@ -2,13 +2,15 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'StormSense AI - Multi-Spectral GIS Cyclone Intelligence Dashboard',
+  title: 'StormSense - Multi-Spectral GIS Cyclone Intelligence & Cyra AI Dashboard',
   description:
-    'High-impact GIS and AI Operational Cockpit for Tropical Cyclone tracking, SigLIP zero-shot visual pattern classification, IBTrACS trajectory prediction, and Autonomous Copilot.',
+    'StormSense: High-impact GIS and AI Operational Cockpit for Tropical Cyclone tracking, SigLIP zero-shot visual pattern classification, IBTrACS trajectory prediction, and Cyra AI Autonomous Copilot.',
   icons: {
     icon: [],
   },
   keywords: [
+    'StormSense',
+    'Cyra AI',
     'Cyclone Tracking',
     'GIS Dashboard',
     'StormSense AI',

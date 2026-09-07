@@ -76,10 +76,10 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
               ? 'bg-zinc-800 text-white font-medium'
               : 'text-zinc-500 hover:text-zinc-300'
           }`}
-          title="4. Deep AI Agent / Copilot"
+          title="4. Cyra AI Copilot"
         >
           <Bot className="w-3 h-3 shrink-0" />
-          <span className="hidden sm:inline truncate">4. Copilot</span>
+          <span className="hidden sm:inline truncate">4. Cyra AI</span>
         </button>
       </div>
 

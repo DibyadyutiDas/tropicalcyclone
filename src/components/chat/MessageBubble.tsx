@@ -33,7 +33,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
       >
         {!isUser && (
           <div className="text-[10px] font-bold mb-1 uppercase tracking-wider" style={{ color: "#6366f1" }}>
-            CycloneGPT
+            Cyra AI
           </div>
         )}
         <div className="text-sm whitespace-pre-wrap leading-relaxed">
