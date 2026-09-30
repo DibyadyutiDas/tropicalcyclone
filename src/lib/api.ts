@@ -8,7 +8,8 @@ import type {
 } from "./types";
 import { windToCategory } from "./types";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "";
+const DEFAULT_BACKEND_URL = "https://stormsense-cyclone-backend-production.up.railway.app";
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || DEFAULT_BACKEND_URL).replace(/\/+$/, "");
 
 /*
  * Member 1 integration — StormSense FastAPI backend (Pydantic) response shapes.
@@ -162,12 +163,18 @@ function toObservation(raw: BackendObservation | Observation): Observation {
 function toSatelliteImage(raw: BackendSatelliteObservation | SatelliteImage): SatelliteImage {
   if (!isBackendSatellite(raw)) return raw as SatelliteImage;
   const s = raw as BackendSatelliteObservation;
+  let imgUrl = s.image_url;
+  if (imgUrl && imgUrl.startsWith("http://localhost:8000")) {
+    imgUrl = imgUrl.replace("http://localhost:8000", API_BASE);
+  } else if (imgUrl && !imgUrl.startsWith("http") && !imgUrl.startsWith("data:") && !imgUrl.startsWith("/")) {
+    imgUrl = `${API_BASE}/${imgUrl}`;
+  }
   return {
     storm_id: s.storm_id,
     source: s.satellite,
     timestamp: s.timestamp,
-    image: s.image_url,
-    url: s.image_url,
+    image: imgUrl,
+    url: imgUrl,
     channel: s.channel ?? "IR",
     product: s.satellite,
     resolution: s.resolution_km != null ? `${s.resolution_km} km` : undefined,
@@ -292,11 +299,36 @@ export function streamChat(
   fetch(`${API_BASE}/api/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ query }),
+    body: JSON.stringify({ query, message: query }),
     signal: ctrl.signal,
   })
     .then(async (res) => {
-      if (!res.ok || !res.body) throw new Error(`Chat error ${res.status}`);
+      if (!res.ok) {
+        const errText = await res.text().catch(() => "");
+        throw new Error(`Chat error ${res.status}${errText ? `: ${errText}` : ""}`);
+      }
+
+      const contentType = res.headers.get("content-type") || "";
+      if (contentType.includes("application/json")) {
+        const data = await res.json();
+        if (data.tools_used && Array.isArray(data.tools_used)) {
+          for (const tool of data.tools_used) {
+            onToolStart(tool, { query });
+            onToolEnd(tool, "Completed");
+          }
+        }
+        if (data.answer) {
+          onToken(data.answer);
+        }
+        onDone();
+        return;
+      }
+
+      if (!res.body) {
+        onDone();
+        return;
+      }
+
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let buffer = "";
