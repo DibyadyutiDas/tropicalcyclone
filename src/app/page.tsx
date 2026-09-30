@@ -45,18 +45,25 @@ function WindyDashboardContent() {
     return all[0];
   });
 
-  // Fetch live NOAA & IMD storms on mount to append to list
+  // Fetch live backend storms on mount to update list and select active storm
   useEffect(() => {
     let mounted = true;
     fetchLiveWindyStorms().then((updatedList) => {
       if (mounted && updatedList.length > 0) {
         setStorms(updatedList);
+        const stormParam = searchParams.get('storm');
+        if (!stormParam) {
+          const activeStorm = updatedList.find((s) => s.status === 'LIVE') || updatedList[0];
+          if (activeStorm) {
+            setSelectedStorm(activeStorm);
+          }
+        }
       }
     });
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [searchParams]);
 
   // Listen for ?storm= in URL params
   useEffect(() => {

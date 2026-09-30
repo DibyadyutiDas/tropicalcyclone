@@ -1,7 +1,7 @@
 import { Storm, ObservationPoint, CycloneCategory, StormStage, TrendAnalysis, ModelPrediction } from '../types/cyclone';
 import { MOCK_STORMS } from './mockStorms';
 import { allStorms } from '../stormsense/data';
-import type { Storm as SSStorm, TrackPoint as SSTrackPoint, Observation as SSObservation } from '../types';
+import { type Storm as SSStorm, type TrackPoint as SSTrackPoint, type Observation as SSObservation, windToCategory } from '../types';
 
 // Map StormSense category string to Windy CycloneCategory
 export function toWindyCategory(raw?: string, windKnots: number = 0): CycloneCategory {
@@ -379,40 +379,134 @@ export function getAllWindyStorms(): Storm[] {
   return Array.from(combinedMap.values());
 }
 
-// Fetch live storms from /api/storms and convert any active NOAA storms
+interface BackendStormRaw {
+  storm_id: string;
+  storm_name: string;
+  active?: boolean;
+  start_time?: string;
+  latest_time?: string;
+  max_wind_kts?: number;
+  min_pressure_hpa?: number;
+  latest_observation?: {
+    storm_id?: string;
+    storm_name?: string;
+    timestamp?: string;
+    lat?: number;
+    lon?: number;
+    wind_kts?: number;
+    pressure_hpa?: number;
+    stage?: string;
+  } | null;
+}
+
+interface BackendTrackRaw {
+  storm_id?: string;
+  storm_name?: string;
+  track?: Array<{
+    timestamp: string;
+    lat: number;
+    lon: number;
+    wind_kts?: number | null;
+    pressure_hpa?: number | null;
+    stage?: string | null;
+  }>;
+}
+
+// Fetch live storms from Railway backend and convert into Windy-compatible format
 export async function fetchLiveWindyStorms(): Promise<Storm[]> {
+  const API_BASE = (
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://stormsense-cyclone-backend-production.up.railway.app"
+  ).replace(/\/+$/, "");
+
   try {
-    const res = await fetch('/api/storms');
+    const res = await fetch(`${API_BASE}/api/storms`, { cache: 'no-store' });
     if (!res.ok) return getAllWindyStorms();
-    const data: SSStorm[] = await res.json();
-    if (!Array.isArray(data)) return getAllWindyStorms();
+    const data = (await res.json()) as BackendStormRaw[];
+    if (!Array.isArray(data) || data.length === 0) return getAllWindyStorms();
 
-    const staticAll = getAllWindyStorms();
-    const staticMap = new Map<string, Storm>(staticAll.map((s) => [s.id, s]));
+    const liveConverted: Storm[] = [];
 
-    // Check for any storms from API that might be newly active (e.g. live NOAA storms)
-    for (const ss of data) {
-      if (!staticMap.has(ss.id)) {
-        try {
-          const trackRes = await fetch(`/api/storms/${ss.id}/track`);
-          const trackData = trackRes.ok ? await trackRes.json() : [];
-          const converted = convertStormSenseSeedToWindyStorm({
-            storm: ss,
-            track: trackData,
-          });
-          staticMap.set(converted.id, converted);
-        } catch {
-          const converted = convertStormSenseSeedToWindyStorm({
-            storm: ss,
-            track: [],
-          });
-          staticMap.set(converted.id, converted);
+    // Prioritize active storms first, then up to 10 total to ensure fast load
+    const activeFirst = [...data].sort((a, b) => {
+      const aAct = a.active !== false ? 1 : 0;
+      const bAct = b.active !== false ? 1 : 0;
+      return bAct - aAct;
+    });
+
+    const targets = activeFirst.slice(0, 10);
+
+    for (const raw of targets) {
+      const stormId = raw.storm_id;
+      const stormName = raw.storm_name;
+      const o = raw.latest_observation;
+      const wind = o?.wind_kts ?? raw.max_wind_kts ?? 50;
+      const pres = o?.pressure_hpa ?? raw.min_pressure_hpa ?? 990;
+      const lat = o?.lat ?? 18.42;
+      const lon = o?.lon ?? 85.13;
+
+      const ssStorm: SSStorm = {
+        id: stormId,
+        name: stormName,
+        lat,
+        lon,
+        wind_kt: wind,
+        pressure_hpa: pres,
+        movement_direction: "NNE",
+        movement_speed: 14,
+        timestamp: o?.timestamp || raw.latest_time || new Date().toISOString(),
+        category: windToCategory(wind),
+        status: raw.active === false ? "historic" : "live",
+        basin: "North Indian Ocean",
+        subbasin: lon < 77 ? "Arabian Sea" : "Bay of Bengal",
+        startTime: raw.start_time,
+        endTime: raw.latest_time,
+        maxWind: raw.max_wind_kts ?? wind,
+        source: "backend",
+      };
+
+      let trackPoints: SSTrackPoint[] = [];
+      try {
+        const trackRes = await fetch(`${API_BASE}/api/storms/${encodeURIComponent(stormId)}/track`, { cache: 'no-store' });
+        if (trackRes.ok) {
+          const trackData = (await trackRes.json()) as BackendTrackRaw;
+          const rawTrack = Array.isArray(trackData) ? trackData : trackData.track || [];
+          trackPoints = rawTrack.map((p) => ({
+            timestamp: p.timestamp,
+            lat: p.lat,
+            lon: p.lon,
+            wind_kt: p.wind_kts ?? 0,
+            pressure_hpa: p.pressure_hpa ?? 0,
+            movement_direction: "NNE",
+            movement_speed: 12,
+            category: windToCategory(p.wind_kts ?? 0),
+            nature: p.stage ?? undefined,
+            source: "backend",
+          }));
         }
+      } catch {
+        trackPoints = [];
       }
+
+      const converted = convertStormSenseSeedToWindyStorm({
+        storm: ssStorm,
+        track: trackPoints,
+      });
+
+      converted.status = raw.active !== false ? 'LIVE' : 'MONITORED';
+
+      liveConverted.push(converted);
     }
 
-    return Array.from(staticMap.values());
+    if (liveConverted.length === 0) return getAllWindyStorms();
+
+    const staticAll = getAllWindyStorms();
+    const liveIds = new Set(liveConverted.map((s) => s.id));
+    const combined = [...liveConverted, ...staticAll.filter((s) => !liveIds.has(s.id))];
+
+    return combined;
   } catch {
     return getAllWindyStorms();
   }
 }
+
