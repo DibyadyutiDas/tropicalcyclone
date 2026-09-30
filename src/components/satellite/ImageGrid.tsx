@@ -81,7 +81,7 @@ export default function ImageGrid({ images, isLoading }: ImageGridProps) {
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-100">
               <span>{formatDateTime(activeImage?.timestamp ?? new Date().toISOString())}</span>
               <span>{activeImage?.channel ?? "N/A"}</span>
-              <span>{activeImage?.product ?? "StormSense composite"}</span>
+              <span>{activeImage?.product ?? "Cyclone Netra composite"}</span>
             </div>
             <div className="mt-1 text-xs text-slate-300">
               {activeImage?.location ?? "Location unavailable"}

@@ -213,7 +213,7 @@ export const MOCK_STORMS: Storm[] = [
       estimatedEyeDiameterKm: 28,
     },
     prediction: {
-      sourceModel: 'StormSense AI Physics + IBTrACS Ensemble v2.4',
+      sourceModel: 'Cyclone Netra AI Physics + IBTrACS Ensemble v2.4',
       trainedDataset: 'IBTrACS Global 1980-2025 + INSAT/Meteosat Reanalysis (N=4,820 storms)',
       predictedLandfallTime: '2026-08-28 22:30 UTC (~16.5 hrs from NOW)',
       predictedLandfallLocation: 'Between Sagar Island (West Bengal) and Khepupara (Bangladesh)',
@@ -537,7 +537,7 @@ export const MOCK_STORMS: Storm[] = [
       estimatedEyeDiameterKm: 18,
     },
     prediction: {
-      sourceModel: 'StormSense AI Physics + IBTrACS Benchmark',
+      sourceModel: 'Cyclone Netra AI Physics + IBTrACS Benchmark',
       trainedDataset: 'IBTrACS Ground Truth Benchmark 2023',
       predictedLandfallTime: 'Historical: Landfall at Sittwe, Myanmar (Cat 5 equivalent)',
       predictedLandfallLocation: 'Sittwe, Rakhine State, Myanmar',
@@ -667,7 +667,7 @@ export const MOCK_STORMS: Storm[] = [
       estimatedEyeDiameterKm: 36,
     },
     prediction: {
-      sourceModel: 'StormSense AI Physics + IBTrACS Benchmark',
+      sourceModel: 'Cyclone Netra AI Physics + IBTrACS Benchmark',
       trainedDataset: 'IBTrACS Ground Truth Benchmark 2023',
       predictedLandfallTime: 'Historical: Landfall near Jakhau Port, Kutch, Gujarat',
       predictedLandfallLocation: 'Jakhau Port, Gujarat, India',

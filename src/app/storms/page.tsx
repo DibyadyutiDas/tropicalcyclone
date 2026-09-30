@@ -159,7 +159,7 @@ function HomeContent() {
               </div>
               <div className="min-w-0">
                 <div className="truncate text-[11px] font-semibold uppercase tracking-[0.3em]" style={{ color: "#6366f1" }}>
-                  StormSense AI
+                  Cyclone Netra AI
                 </div>
                 <div className="truncate text-xs sm:text-sm" style={{ color: "#5a6380" }}>
                   North Indian Ocean cyclone operations

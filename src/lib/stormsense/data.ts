@@ -449,7 +449,7 @@ function makeStormSvgDataUrl(input: {
         <text x="64" y="698" font-size="24">Category ${escapeXml(input.category)}</text>
       </g>
       <g fill="#d7ffe0" fill-opacity="0.6" font-family="Inter, Arial, sans-serif">
-        <text x="1060" y="92" font-size="20" text-anchor="end">StormSense Satellite — GREEN IR</text>
+        <text x="1060" y="92" font-size="20" text-anchor="end">Cyclone Netra Satellite — GREEN IR</text>
         <text x="1060" y="120" font-size="18" text-anchor="end">Common format preview</text>
       </g>
       <circle cx="940" cy="230" r="18" fill="#ffffff" fill-opacity="0.85" />

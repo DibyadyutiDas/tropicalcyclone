@@ -1,4 +1,4 @@
-# 🌀 StormSense - Tropical Cyclone Intelligence Platform & Cyra AI
+# 🌀 Cyclone Netra - Tropical Cyclone Intelligence Platform & Cyra AI
 
 An advanced, real-time meteorological intelligence and tropical cyclone monitoring platform built with Next.js (App Router), TypeScript, and WebGL/Canvas map rendering engines. Featuring the **Cyra AI** meteorological copilot.
 
@@ -325,7 +325,7 @@ The platform is designed to ingest data from multiple authoritative meteorologic
 1. **NOAA NHC & JTWC**: Global tropical cyclone advisories, active tracks, and best-track archives.
 2. **IMD (India Meteorological Department)**: High-resolution tracking and bulletins for the North Indian Ocean, Arabian Sea, and Bay of Bengal.
 3. **MOSDAC (ISRO / Space Applications Centre)**: Indian Geostationary Satellite (INSAT-3D/3DR) infrared, visible, and water vapor channels.
-4. **StormSense Backend Integration**: Adapter layer (`src/lib/data/stormSenseAdapter.ts` & `src/lib/stormsense/service.ts`) capable of synchronizing with local mock storage or an external FastAPI service.
+4. **Cyclone Netra Backend Integration**: Adapter layer (`src/lib/data/stormSenseAdapter.ts` & `src/lib/stormsense/service.ts`) capable of synchronizing with local mock storage or an external FastAPI service.
 
 ---
 
@@ -344,7 +344,7 @@ STORMSENSE_PROVIDER=noaa
 MOSDAC_API_URL=https://mosdac.gov.in/api
 IMD_API_URL=https://mausam.imd.gov.in/api
 
-# Optional: Custom StormSense backend API URL
+# Optional: Custom Cyclone Netra backend API URL
 NEXT_PUBLIC_API_URL=http://localhost:8000
 ```
 

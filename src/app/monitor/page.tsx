@@ -129,7 +129,7 @@ export default function MonitorPage() {
               🌀
             </Link>
             <Link href="/" className="font-bold text-slate-900 hover:opacity-80">
-              StormSense
+              Cyclone Netra
             </Link>
           </div>
           <div className="flex items-center gap-3 sm:gap-4">

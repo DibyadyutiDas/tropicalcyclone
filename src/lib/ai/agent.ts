@@ -39,7 +39,7 @@ export const COPILOT_TOOLS: ToolDefinition[] = [
   },
   {
     name: 'get_prediction',
-    description: 'Runs StormSense AI Physics + IBTrACS ensemble model to project landfall timing, coordinates, and surge height.',
+    description: 'Runs Cyclone Netra AI Physics + IBTrACS ensemble model to project landfall timing, coordinates, and surge height.',
     params: ['storm_id', 'forecast_hours'],
   },
   {
@@ -76,7 +76,7 @@ export async function processUserCopilotQuery(
 
     return {
       text: `### 🎯 Landfall & Impact Assessment for ${storm.name}\n\n` +
-        `Based on our multi-source telemetry and the **StormSense AI + IBTrACS Ensemble Model**:\n\n` +
+        `Based on our multi-source telemetry and the **Cyclone Netra AI + IBTrACS Ensemble Model**:\n\n` +
         `* **Predicted Landfall Location:** ${storm.prediction.predictedLandfallLocation}\n` +
         `* **Estimated Landfall ETA:** **${storm.prediction.predictedLandfallTime}** (Confidence: ${storm.prediction.landfallProbabilityPct}%)\n` +
         `* **Intensity at Landfall:** **${storm.prediction.predictedLandfallIntensity}** with sustained winds of 145–160 km/h gusting to 175 km/h.\n` +

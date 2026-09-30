@@ -29,7 +29,7 @@ const DynamicCycloneMap = dynamic(
   }
 );
 
-export default function StormSenseWindyDashboard() {
+export default function CycloneNetraDashboard() {
   return (
     <Suspense fallback={null}>
       <WindyDashboardContent />
@@ -103,7 +103,7 @@ function WindyDashboardContent() {
   // Load theme preference from localStorage
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('stormsense_theme') as 'dark' | 'light' | null;
+      const saved = (localStorage.getItem('cyclone_netra_theme') || localStorage.getItem('stormsense_theme')) as 'dark' | 'light' | null;
       if (saved === 'light' || saved === 'dark') {
         setTheme(saved);
       }
@@ -135,7 +135,7 @@ function WindyDashboardContent() {
     setTheme((prev) => {
       const next = prev === 'dark' ? 'light' : 'dark';
       try {
-        localStorage.setItem('stormsense_theme', next);
+        localStorage.setItem('cyclone_netra_theme', next);
       } catch {
         // ignore
       }
@@ -146,7 +146,7 @@ function WindyDashboardContent() {
   const handleSetTheme = useCallback((newTheme: 'dark' | 'light') => {
     setTheme(newTheme);
     try {
-      localStorage.setItem('stormsense_theme', newTheme);
+      localStorage.setItem('cyclone_netra_theme', newTheme);
     } catch {
       // ignore
     }

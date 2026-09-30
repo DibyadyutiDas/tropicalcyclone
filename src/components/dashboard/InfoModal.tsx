@@ -36,7 +36,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({ isOpen, onClose }) => {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-lg font-bold text-white">StormSense AI Architecture</h2>
+              <h2 className="text-lg font-bold text-white">Cyclone Netra AI Architecture</h2>
               <span className="text-xs px-2 py-0.5 rounded bg-zinc-900 text-cyan-400 font-semibold border border-zinc-800">
                 v2.6 Enterprise
               </span>

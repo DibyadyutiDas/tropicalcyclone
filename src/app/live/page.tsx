@@ -117,7 +117,7 @@ function LiveContent() {
                 <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full border-2 border-white pulse-live" style={{ background: "#10b981" }} />
               </div>
               <div className="min-w-0">
-                <div className="truncate text-[11px] font-bold uppercase tracking-[0.3em]" style={{ color: "#6366f1" }}>StormSense · Live Monitoring</div>
+                <div className="truncate text-[11px] font-bold uppercase tracking-[0.3em]" style={{ color: "#6366f1" }}>Cyclone Netra · Live Monitoring</div>
                 <div className="truncate text-xs sm:text-sm" style={{ color: "#5a6380" }}>Near-Real-Time · Indian Ocean · NASA GIBS</div>
               </div>
             </div>

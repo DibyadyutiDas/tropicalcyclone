@@ -116,8 +116,8 @@ export const TopNav: React.FC<TopNavProps> = ({
 
           {/* Logotype */}
           <div className="flex items-center tracking-wider text-xs sm:text-sm font-bold font-sans">
-            <span className={isLight ? 'text-slate-900' : 'text-white'}>STORM</span>
-            <span className="text-cyan-500 font-semibold ml-0.5 inline">SENSE</span>
+            <span className={isLight ? 'text-slate-900' : 'text-white'}>CYCLONE</span>
+            <span className="text-cyan-500 font-semibold ml-1 inline">NETRA</span>
             <span
               className={`font-medium text-[9px] tracking-widest ml-1 self-center border px-1 py-0.2 rounded hidden sm:inline ${
                 isLight

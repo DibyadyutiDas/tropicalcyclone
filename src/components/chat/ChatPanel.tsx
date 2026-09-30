@@ -44,7 +44,7 @@ export default function ChatPanel() {
           </div>
           <div>
             <h2 className="text-sm font-bold" style={{ color: "#1a2035" }}>Cyra AI</h2>
-            <p className="text-[10px] font-medium" style={{ color: "#8b95b0" }}>StormSense AI cyclone intelligence agent</p>
+            <p className="text-[10px] font-medium" style={{ color: "#8b95b0" }}>Cyclone Netra AI cyclone intelligence agent</p>
           </div>
           <span className="flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10px] font-semibold" style={{ background: "#ecfdf5", borderColor: "#6ee7b7", color: "#059669" }}>
             <span className="h-1.5 w-1.5 rounded-full pulse-live" style={{ background: "#10b981" }} />
@@ -130,7 +130,7 @@ export default function ChatPanel() {
           )}
         </div>
         <div className="mt-2 text-[10px] text-center" style={{ color: "#c4c9dc" }}>
-          Powered by StormSense · Cyra AI Copilot
+          Powered by Cyclone Netra · Cyra AI Copilot
         </div>
       </div>
     </div>
